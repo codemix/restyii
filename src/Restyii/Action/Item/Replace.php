@@ -13,12 +13,18 @@ class Replace extends Base
     public $verb = "PUT";
 
     /**
+     * @var \Restyii\CacheHelper\Base|bool the action cache
+     */
+    protected $_cache = false;
+
+
+    /**
      * @inheritDoc
      */
     public function label()
     {
         return \Yii::t('resource', "Replace {resourceLabel}", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -29,7 +35,7 @@ class Replace extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Replace the specified {resourceLabel}.", array(
-            '{resourceLabel}' => $model->label(),
+            '{resourceLabel}' => $model->classLabel(),
         ));
     }
 

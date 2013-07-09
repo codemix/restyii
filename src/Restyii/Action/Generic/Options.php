@@ -17,7 +17,7 @@ class Options extends Base
     public function label()
     {
         return \Yii::t('resource', "{resourceLabel} Options", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -28,7 +28,7 @@ class Options extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Displays the options for {collectionLabel}.", array(
-            '{collectionLabel}' => $model->collectionLabel(),
+            '{collectionLabel}' => $model->classLabel(true),
         ));
     }
 
@@ -87,8 +87,8 @@ class Options extends Base
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
-            'label' => $model->label(),
-            'collectionLabel' => $model->collectionLabel(),
+            'label' => $model->classLabel(),
+            'collectionLabel' => $model->classLabel(true),
             'attributes' => $attributes,
             'actions' => $actions
         ));
@@ -113,8 +113,8 @@ class Options extends Base
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
-            'label' => $model->label(),
-            'collectionLabel' => $model->collectionLabel(),
+            'label' => $model->classLabel(),
+            'collectionLabel' => $model->classLabel(true),
             'attributes' => $attributes,
             'actions' => $actions
         ));

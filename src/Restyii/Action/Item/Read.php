@@ -18,7 +18,7 @@ class Read extends Base
     public function label()
     {
         return \Yii::t('resource', "Read {resourceLabel}", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -29,7 +29,7 @@ class Read extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Read the specified {resourceLabel}.", array(
-            '{resourceLabel}' => $model->label(),
+            '{resourceLabel}' => $model->classLabel(),
         ));
     }
 

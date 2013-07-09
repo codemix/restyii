@@ -17,7 +17,7 @@ class Head extends Base
     public function label()
     {
         return \Yii::t('resource', "{resourceLabel} Headers", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -28,7 +28,7 @@ class Head extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Displays the headers for {collectionLabel}.", array(
-            '{collectionLabel}' => $model->collectionLabel(),
+            '{collectionLabel}' => $model->classLabel(true),
         ));
     }
 
@@ -87,7 +87,7 @@ class Head extends Base
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
-            'label' => $model->label(),
+            'label' => $model->classLabel(),
             'attributes' => $attributes,
             'actions' => $actions
         ));
@@ -112,7 +112,7 @@ class Head extends Base
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
-            'label' => $model->collectionLabel(),
+            'label' => $model->classLabel(true),
             'attributes' => $attributes,
             'actions' => $actions
         ));

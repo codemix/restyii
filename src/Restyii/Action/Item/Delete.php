@@ -13,12 +13,17 @@ class Delete extends Base
     public $verb = "DELETE";
 
     /**
+     * @var \Restyii\CacheHelper\Base|bool the action cache
+     */
+    protected $_cache = false;
+
+    /**
      * @inheritDoc
      */
     public function label()
     {
         return \Yii::t('resource', "Delete {resourceLabel}", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -29,7 +34,7 @@ class Delete extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Delete the specified {resourceLabel}.", array(
-            '{resourceLabel}' => $model->label(),
+            '{resourceLabel}' => $model->classLabel(),
         ));
     }
 

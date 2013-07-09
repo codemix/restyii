@@ -17,6 +17,11 @@ abstract class Base extends \CAction
     public $verb = 'GET';
 
     /**
+     * @var array the parameters for the action
+     */
+    protected $_params;
+
+    /**
      * @var string the name of the scenario for the action
      */
     protected $_scenario;
@@ -30,6 +35,57 @@ abstract class Base extends \CAction
      * @var \CDbCriteria the criteria to use with this action, if any.
      */
     protected $_criteria;
+
+    /**
+     * @var string the name of the view to render for this action
+     */
+    protected $_viewName;
+
+    /**
+     * @var \Restyii\CacheHelper\Base|bool the action cache
+     */
+    protected $_cache;
+
+    /**
+     * Sets the name of the view to render for this action
+     * @param string $viewName the view name
+     */
+    public function setViewName($viewName)
+    {
+        $this->_viewName = $viewName;
+    }
+
+    /**
+     * Gets the name of the view to render for this action
+     * @return string the view name
+     */
+    public function getViewName()
+    {
+        if ($this->_viewName === null)
+            $this->_viewName = $this->getId();
+        return $this->_viewName;
+    }
+
+    /**
+     * @param bool|\Restyii\CacheHelper\Base $cache
+     */
+    public function setCache($cache)
+    {
+        $this->_cache = $cache;
+    }
+
+    /**
+     * @return bool|\Restyii\CacheHelper\Base
+     */
+    public function getCache()
+    {
+        if ($this->_cache === null) {
+            $this->_cache = new \Restyii\CacheHelper\Base();
+            $this->_cache->setAction($this);
+        }
+        return $this->_cache;
+    }
+
 
 
     /**
@@ -166,6 +222,7 @@ abstract class Base extends \CAction
     }
 
 
+
     /**
      * Loads the appropriate resource for the current request.
      * @param mixed|null $pk the primary key to load, defaults to null meaning use the GET parameters.
@@ -181,10 +238,79 @@ abstract class Base extends \CAction
             $pk = $this->getPkFromContext($finder);
         if ($pk === null)
             throw new \CHttpException(401, 'Invalid Request, missing parameter(s).');
+        $criteria = $this->getCriteria();
+        $criteria->mergeWith($this->createEmbedCriteria($finder));
+        $finder->getDbCriteria()->mergeWith($criteria);
+        if (($cache = $this->getCache()) !== false) {
+            $cacheKey = $cache->createKey($finder, array($pk));
+            $fromCache = $cache->read($cacheKey);
+            if ($fromCache)
+                return $fromCache;
+        }
+        else
+            $cacheKey = false;
+
         $model = $finder->findByPk($pk);
         if (!is_object($model))
             throw new \CHttpException(404, 'The specified resource cannot be found.');
+        if ($cache)
+            $cache->write($cacheKey, $model);
         return $model;
+    }
+
+    /**
+     * Creates a criteria that can be used to return related records
+     *
+     * @param ActiveRecord $finder the finder model
+     *
+     * @return \CDbCriteria the criteria object
+     * @throws \CHttpException if unknown embedded parameters are specified
+     */
+    protected function createEmbedCriteria(ActiveRecord $finder)
+    {
+        $criteria = new \CDbCriteria();
+        $criteria->with = array();
+        $params = $this->getParams();
+        if (isset($params['_embed'])) {
+            $embedNames = preg_split("/\s*,\s*/", $params['_embed']);
+            $links = $finder->links();
+            foreach($embedNames as $name) {
+                if (!isset($links[$name]))
+                    throw new \CHttpException(400, \Yii::t('resource', "Invalid request, unknown {name} parameter.", array('{name}' => $name)));
+                $criteria->with[] = $name;
+            }
+            if (count($embedNames))
+                $criteria->together = true;
+        }
+        return $criteria;
+    }
+
+    /**
+     * Performs a search
+     *
+     * @param ActiveRecord $finder
+     * @param array $params
+     *
+     * @return \Restyii\Model\ActiveDataProvider
+     */
+    public function search(ActiveRecord $finder, $params = array())
+    {
+        $criteria = $this->getCriteria();
+        $criteria->mergeWith($this->createEmbedCriteria($finder));
+        $finder->getDbCriteria()->mergeWith($criteria);
+        $dataProvider = $finder->search($params);
+        if (($cache = $this->getCache()) !== false) {
+            $cacheKey = $cache->createKey($dataProvider, $params);
+            $fromCache = $cache->read($cacheKey);
+            if ($fromCache)
+                return $fromCache;
+        }
+        else
+            return $dataProvider;
+
+        $dataProvider->getData();
+        $cache->write($cacheKey, $dataProvider);
+        return $dataProvider;
     }
 
     /**
@@ -295,6 +421,49 @@ abstract class Base extends \CAction
         $request = $app->getRequest(); /* @var \Restyii\Web\Request $request */
         return $request->getUserInput();
 
+    }
+
+    /**
+     * Gets the parameters for the action
+     * @return array the parameters for the action
+     */
+    public function getParams()
+    {
+        if ($this->_params === null)
+            $this->_params = $this->loadParams();
+        return $this->_params;
+    }
+
+    /**
+     * Sets the parameters for the action
+     * @param array $params the parameters for the action
+     */
+    public function setParams($params)
+    {
+        $this->_params = $params;
+    }
+
+
+    /**
+     * Loads the parameters for the action
+     *
+     * @param array|null $context the context to load parameters from, defaults to $_GET
+     *
+     * @return array the loaded parameters, name => value
+     * @throws \CHttpException if there are missing required parameters
+     */
+    protected function loadParams($context = null)
+    {
+        if ($context === null)
+            $context = $_GET;
+        $params = array();
+        foreach($this->params() as $name => $config) {
+            if (isset($context[$name]))
+                $params[$name] = $context[$name];
+            else if (!empty($config['required']))
+                throw new \CHttpException(400, \Yii::t('resource', 'Missing {name} parameter', array('{name}' => $name)));
+        }
+        return $params;
     }
 
     /**

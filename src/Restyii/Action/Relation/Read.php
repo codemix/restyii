@@ -1,28 +1,23 @@
 <?php
 
-namespace Restyii\Action\Collection;
+namespace Restyii\Action\Relation;
 
 /**
- * RESTful 'Create' Action
+ * RESTful 'Read' Action
  */
-class Create extends Base
+class Read extends Base
 {
     /**
      * @var string the HTTP verb for this action.
      */
-    public $verb = "POST";
-
-    /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
+    public $verb = "GET";
 
     /**
      * @inheritDoc
      */
     public function label()
     {
-        return \Yii::t('resource', "Create {resourceLabel}", array(
+        return \Yii::t('resource', "Read {resourceLabel}", array(
             '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
@@ -33,18 +28,9 @@ class Create extends Base
     public function description()
     {
         $model = $this->staticModel();
-        return \Yii::t('resource', "Creates a new {resourceLabel}.", array(
+        return \Yii::t('resource', "Read the specified {resourceLabel}.", array(
             '{resourceLabel}' => $model->classLabel(),
-            '{collectionLabel}' => $model->classLabel(true),
         ));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function params()
-    {
-        return array();
     }
 
     /**
@@ -59,11 +45,8 @@ class Create extends Base
      */
     public function present($userInput, $loaded = null)
     {
-        if ($loaded === null)
-            $loaded = $this->instantiateResourceModel();
-        return array(200, $loaded);
+       return $this->perform($userInput, $loaded);
     }
-
 
     /**
      * Performs the action
@@ -73,14 +56,11 @@ class Create extends Base
      *
      * @return array an array of parameters to send to the `respond()` method
      */
-    public function perform($userInput = null, $loaded = null)
+    public function perform($userInput, $loaded = null)
     {
         if ($loaded === null)
-            $loaded = $this->instantiateResourceModel();
-        if ($this->applyUserInput($userInput, $loaded) && $this->save($loaded))
-            return array(201, $loaded);
-        else
-            return array(400, $loaded);
+            $loaded = $this->loadRelated();
+        return array(200, $loaded);
     }
 
 

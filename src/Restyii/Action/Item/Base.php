@@ -42,6 +42,11 @@ abstract class Base extends \Restyii\Action\Base
                 'type' => $model->getAttributeType($attribute),
                 'required' => true
             );
+        $params['_embed'] = array(
+            'label' => \Yii::t('resource', 'Embed'),
+            'description' => \Yii::t('resource', 'The comma separated names of the links to embed in the results.'),
+            'type' => 'string',
+        );
         return $params;
     }
 

@@ -64,6 +64,18 @@ class Model extends Base
             'copy' => array(
                 'class' => 'Restyii\Action\Item\Copy',
             ),
+
+            // the following actions operate on relations
+
+            'createRelated' => array(
+                'class' => 'Restyii\Action\Relation\Create',
+            ),
+            'readRelated' => array(
+                'class' => 'Restyii\Action\Relation\Read',
+            ),
+            'searchRelated' => array(
+                'class' => 'Restyii\Action\Relation\Search',
+            ),
         );
     }
 

@@ -50,7 +50,7 @@ class Base extends \CController
 
         $route = trim(array_shift($url), "/");
         $params = $url;
-        if ($route != $this->getRoute())
+        if ($route != $this->getId() && $route != $this->getRoute())
             return false;
 
         foreach($params as $key => $value) {

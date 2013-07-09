@@ -2,6 +2,8 @@
 
 namespace Restyii\MimeType;
 
+use Restyii\Model\ActiveDataProvider;
+use Restyii\Model\ActiveRecord;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
 use \Restyii\Web\Response;
@@ -93,7 +95,7 @@ abstract class Base extends \CComponent
      */
     public function prepare($data)
     {
-        if ($data instanceof \CActiveDataProvider)
+        if ($data instanceof ActiveDataProvider)
             return $this->prepareActiveDataProvider($data);
         else if ($data instanceof ModelInterface)
             return $this->prepareModel($data);
@@ -108,63 +110,28 @@ abstract class Base extends \CComponent
     /**
      * Prepares a data provider
      *
-     * @param \CActiveDataProvider $dataProvider the data provider to prepare
+     * @param ActiveDataProvider $dataProvider the data provider to prepare
      *
      * @return array the prepared response
      */
-    public function prepareActiveDataProvider(\CActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
     {
         $data = array_map(array($this, 'prepare'), $dataProvider->getData());
         $pagination = $dataProvider->getPagination();
         $model = $dataProvider->model;
         if ($model instanceof ModelInterface)
-            $containerName = $model->urlName();
+            $containerName = $model->controllerID();
         else
             $containerName = lcfirst(get_class($model));
         $prepared = array(
             'total' => (int) $dataProvider->getTotalItemCount(),
-            'offset' => $pagination ? $pagination->getOffset() : 0,
-            'limit' => $pagination ? $pagination->getLimit() : null,
+            'params' => $dataProvider->getParams(),
             '_embedded' => array(
                 $containerName => $data
             ),
             '_links' => array()
         );
-        if (method_exists($dataProvider, 'links')) {
-            $prepared['_links'] = $dataProvider->links();
-        }
-        else if (isset($dataProvider->links)) {
-            $prepared['_links'] = $dataProvider->links;
-        }
-        else if ($pagination) {
-            $controller = \Yii::app()->getController();
-            if ($pagination->getCurrentPage() > 0)
-                $prepared['_links']['prev'] = array(
-                    'label' => 'Previous Page',
-                    'href' => $controller->createUrl(
-                        $controller->getRoute(),
-                        \CMap::mergeArray(
-                            $_GET,
-                            array(
-                                'offset' => $pagination->getOffset() - $pagination->getLimit(),
-                            )
-                        )
-                    ),
-                );
-            if ($pagination->getCurrentPage() < ($pagination->getPageCount() - 1))
-                $prepared['_links']['prev'] = array(
-                    'label' => 'Next Page',
-                    'href' => $controller->createUrl(
-                        $controller->getRoute(),
-                        \CMap::mergeArray(
-                            $_GET,
-                            array(
-                                'offset' => $pagination->getOffset() + $pagination->getLimit(),
-                            )
-                        )
-                    ),
-                );
-        }
+        $prepared['_links'] = $dataProvider->getLinks();
         return $prepared;
     }
 
@@ -178,11 +145,24 @@ abstract class Base extends \CComponent
     public function prepareModel(ModelInterface $model)
     {
         $prepared = array();
+        $links = $model->links();
         foreach($model->getVisibleAttributeNames() as $name)
             $prepared[$name] = $model->{$name};
+
+        if ($model instanceof ActiveRecord) {
+            $embedded = array();
+            foreach($model->getMetaData()->relations as $name => $config){
+                if (!$model->hasRelated($name))
+                    continue;
+                $embedded[$name] = $this->prepare($model->getRelated($name));
+            }
+            if (count($embedded))
+                $prepared['_embedded'] = $embedded;
+        }
+
         if ($model->hasErrors())
             $prepared['_errors'] = $model->getErrors();
-        $prepared['_links'] = $model->links();
+        $prepared['_links'] = $links;
         return $prepared;
     }
 

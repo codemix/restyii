@@ -168,7 +168,10 @@ class Request extends \CHttpRequest
     }
 
 
-
+    /**
+     * Creates a response for the request.
+     * @return Response the response object
+     */
     protected function createResponse()
     {
         $response = new Response();
@@ -334,6 +337,16 @@ class Request extends \CHttpRequest
             $this->_userInput = $format->parse($this);
         }
         return $this->_userInput;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    protected function normalizeRequest()
+    {
+        parent::normalizeRequest();
+        #\Yii::app()->attachEventHandler('onBeginRequest',array($this,'validateCsrfToken'));
     }
 
 }

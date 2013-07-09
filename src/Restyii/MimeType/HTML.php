@@ -76,7 +76,6 @@ class HTML extends Base
         */
 
         $params = $this->prepare($response->data);
-
         if ($request->getIsAjaxRequest())
             return $controller->renderPartial($response->getViewName(), $params, true);
         else

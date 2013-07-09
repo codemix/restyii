@@ -2,6 +2,7 @@
 
 namespace Restyii\MimeType;
 
+use Restyii\Model\ActiveDataProvider;
 use Restyii\Model\ActiveRecord;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
@@ -82,18 +83,18 @@ class Markdown extends Base
     /**
      * @inheritDoc
      */
-    public function prepareActiveDataProvider(\CActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
     {
         $out = array();
         $model = $dataProvider->model;
         if ($model instanceof ModelInterface) {
-            $out[] = "# ".$model->collectionLabel()."\n";
+            $out[] = "# ".$model->classLabel(true)."\n";
 
             $total = $dataProvider->getTotalItemCount();
             $out[] = \Yii::t('resource', "n==0#There are no {collectionLabel}.|n==1#There is one {resourceLabel}.|n>1#There are {n} {collectionLabel}.", array(
                 $total,
-                '{collectionLabel}' => $model->collectionLabel(),
-                '{resourceLabel}' => $model->label(),
+                '{collectionLabel}' => $model->classLabel(true),
+                '{resourceLabel}' => $model->classLabel(),
             ));
 
         }
@@ -116,12 +117,12 @@ class Markdown extends Base
     public function prepareModel(ModelInterface $model)
     {
         $out = array();
-        $name = $model->name();
+        $name = $model->instanceLabel();
         if (empty($name) && $model instanceof ActiveRecord)
             $name = $model->getPrimaryKey();
 
         $out[] = "# ".\Yii::t('resource', "{resourceLabel}: {resourceName}",
-                array('{resourceLabel}' => $model->label(), '{resourceName}' => $name))."\n";
+                array('{resourceLabel}' => $model->classLabel(), '{resourceName}' => $name))."\n";
         $attributeNames = $model->getVisibleAttributeNames();
         foreach($attributeNames as $name) {
             if (!empty($model->{$name}))

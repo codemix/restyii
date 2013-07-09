@@ -10,14 +10,16 @@ interface ModelInterface
      * creating links to resource instances.
      * @return string the name for this resource
      */
-    public function name();
+    public function instanceLabel();
 
     /**
      * Returns the label for this resource type.
      *
+     * @param bool $plural whether or not to return the plural version of the label, e.g. 'Users' instead of 'User'
+     *
      * @return string the resource label
      */
-    public function label();
+    public function classLabel($plural = false);
 
     /**
      * Returns the label to use for collections of resources of this type.
@@ -31,7 +33,7 @@ interface ModelInterface
      * deals with resources of this type.
      * @return string the url name for this resource
      */
-    public function urlName();
+    public function controllerID();
 
     /**
      * Returns the links to other related resources.

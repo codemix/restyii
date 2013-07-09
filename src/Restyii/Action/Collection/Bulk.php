@@ -15,7 +15,7 @@ class Bulk extends Base
     public function label()
     {
         return \Yii::t('resource', "Bulk {collectionLabel} Actions", array(
-            '{collectionLabel}' => $this->staticModel()->collectionLabel()
+            '{collectionLabel}' => $this->staticModel()->classLabel(true)
         ));
     }
 
@@ -26,8 +26,8 @@ class Bulk extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Performs bulk actions on {collectionLabel}.", array(
-            '{resourceLabel}' => $model->label(),
-            '{collectionLabel}' => $model->collectionLabel(),
+            '{resourceLabel}' => $model->classLabel(),
+            '{collectionLabel}' => $model->classLabel(true),
         ));
     }
 

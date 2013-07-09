@@ -15,7 +15,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      * creating links to resource instances.
      * @return string the name for this resource
      */
-    public function name()
+    public function instanceLabel()
     {
         $pk = $this->getPrimaryKey();
         if (is_array($pk))
@@ -27,11 +27,17 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     /**
      * Returns the label for this resource type.
      *
+     * @param bool $plural whether or not to pluralize the label, e.g. 'Users' instead of 'User'
+     *
      * @return string the resource label
      */
-    public function label()
+    public function classLabel($plural = false)
     {
-        return $this->generateAttributeLabel(get_class($this));
+        if ($plural)
+            $label = $this->pluralize(get_class($this));
+        else
+            $label = get_class($this);
+        return $this->generateAttributeLabel($label);
     }
 
     /**
@@ -49,7 +55,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      * deals with resources of this type.
      * @return string the url name for this resource
      */
-    public function urlName()
+    public function controllerID()
     {
         return lcfirst(get_class($this));
     }
@@ -360,7 +366,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
                     unset($params[$key]);
             }
         }
-        $route = '/'.$this->urlName().'/'.$action;
+        $route = '/'.$this->controllerID().'/'.$action;
         if ($schema === false)
             return \Yii::app()->createUrl($route, $params, $ampersand);
         else if ($schema === true)
@@ -407,27 +413,35 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
-     * Performs a search and returns a data provider with the results.
-     * @return \CActiveDataProvider the data provider containing the results.
+     * Performs a search and returns a data provider that can return the results.
+     *
+     *
+     * @param array $params the search parameters
+     *
+     * @return ActiveDataProvider the data provider containing the results.
      */
-    public function search()
+    public function search($params = array())
     {
         $criteria = new \CDbCriteria();
-        $safeAttributes = $this->getSafeAttributeNames();
-        $columns = $this->getTableSchema()->columns;
-        foreach($safeAttributes as $attribute) {
-            if (!isset($columns[$attribute]))
-                continue;
-            $column = $columns[$attribute];
-            if ($column->type == "string")
-                $criteria->compare($attribute, $this->{$attribute}, true);
-            else
-                $criteria->compare($attribute, $this->{$attribute});
+        if (!empty($params['q'])) {
+            $safeAttributes = $this->getSafeAttributeNames();
+            $columns = $this->getTableSchema()->columns;
+            foreach($safeAttributes as $attribute) {
+                if (!isset($columns[$attribute]))
+                    continue;
+                $column = $columns[$attribute];
+                if ($column->type == "string")
+                    $criteria->compare($attribute, $params['q'], true, 'OR');
+                else
+                    $criteria->compare($attribute, $params['q'], 'OR');
+            }
         }
-        return new \CActiveDataProvider($this, array(
+        return new ActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'params' => $params,
             'pagination' => array(
-                'pageSize' => 20,
+                'pageVar' => 'page',
+                'pageSize' => isset($params['size']) ? $params['size'] : 20,
             )
         ));
     }

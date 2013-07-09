@@ -3,6 +3,7 @@
 
 namespace Restyii\MimeType;
 
+use Restyii\Model\ActiveDataProvider;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
 use \Restyii\Web\Response;
@@ -122,7 +123,7 @@ class CSV extends Base
     /**
      * @inheritDoc
      */
-    public function prepareActiveDataProvider(\CActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
     {
         $model = $dataProvider->model;
         if ($model instanceof \Restyii\Model\ModelInterface)

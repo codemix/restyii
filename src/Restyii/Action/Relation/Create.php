@@ -1,11 +1,11 @@
 <?php
 
-namespace Restyii\Action\Item;
+namespace Restyii\Action\Relation;
 
 /**
- * RESTful 'Update' Action
+ * RESTful 'Create' Relation Action
  */
-class Update extends Base
+class Create extends Base
 {
     /**
      * @var string the HTTP verb for this action.
@@ -17,12 +17,13 @@ class Update extends Base
      */
     protected $_cache = false;
 
+
     /**
      * @inheritDoc
      */
     public function label()
     {
-        return \Yii::t('resource', "Update {resourceLabel}", array(
+        return \Yii::t('resource', "Create {resourceLabel}", array(
             '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
@@ -33,9 +34,27 @@ class Update extends Base
     public function description()
     {
         $model = $this->staticModel();
-        return \Yii::t('resource', "Update / edit the specified {resourceLabel}.", array(
+        return \Yii::t('resource', "Creates a new {resourceLabel}.", array(
             '{resourceLabel}' => $model->classLabel(),
+            '{collectionLabel}' => $model->classLabel(true),
         ));
+    }
+
+    /**
+     * Presents the action without performing it.
+     * This is used to e.g. show a html form to a user so that they can
+     * enter data and *then* perform the action.
+     *
+     * @param array|boolean $userInput the user input
+     * @param mixed|null $loaded the pre-loaded data for the action, if any
+     *
+     * @return array an array of parameters to send to the `respond()` method
+     */
+    public function present($userInput, $loaded = null)
+    {
+        if ($loaded === null)
+            $loaded = $this->instantiateRelatedModel();
+        return array(200, $loaded);
     }
 
 
@@ -50,9 +69,9 @@ class Update extends Base
     public function perform($userInput = null, $loaded = null)
     {
         if ($loaded === null)
-            $loaded = $this->load();
+            $loaded = $this->instantiateRelatedModel();
         if ($this->applyUserInput($userInput, $loaded) && $this->save($loaded))
-            return array(200, $loaded);
+            return array(201, $loaded);
         else
             return array(400, $loaded);
     }

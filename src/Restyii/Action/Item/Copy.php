@@ -13,12 +13,17 @@ class Copy extends Base
     public $verb = "COPY";
 
     /**
+     * @var \Restyii\CacheHelper\Base|bool the action cache
+     */
+    protected $_cache = false;
+
+    /**
      * @inheritDoc
      */
     public function label()
     {
         return \Yii::t('resource', "Copy {resourceLabel}", array(
-            '{resourceLabel}' => $this->staticModel()->label()
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -29,7 +34,7 @@ class Copy extends Base
     {
         $model = $this->staticModel();
         return \Yii::t('resource', "Copies the {resourceLabel} to another location.", array(
-            '{resourceLabel}' => $model->label(),
+            '{resourceLabel}' => $model->classLabel(),
         ));
     }
 

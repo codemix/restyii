@@ -1,6 +1,8 @@
 <?php
 
-namespace Restyii\Action\Collection;
+namespace Restyii\Action\Relation;
+
+use Restyii\Model\ActiveRecord;
 
 class Search extends Base
 {
@@ -8,6 +10,7 @@ class Search extends Base
      * @var string the HTTP verb for this action.
      */
     public $verb = "GET";
+
 
     /**
      * @inheritDoc
@@ -36,19 +39,14 @@ class Search extends Base
      */
     public function params()
     {
-        return array(
+        return \CMap::mergeArray(parent::params(), array(
             'q' => array(
                 'label' => \Yii::t('resource', 'Query'),
                 'description' => \Yii::t('resource', 'The search query text'),
                 'required' => false,
                 'type' => 'string',
-            ),
-            '_embed' => array(
-                'label' => \Yii::t('resource', 'Embed'),
-                'description' => \Yii::t('resource', 'The comma separated names of the links to embed in the results.'),
-                'type' => 'string',
-            ),
-        );
+            )
+        ));
     }
 
 
@@ -78,12 +76,23 @@ class Search extends Base
     public function perform($userInput, $loaded = null)
     {
         if ($loaded === null)
-            $loaded = $this->instantiateResourceModel();
-        $params = $this->getParams();
+            $relatedModel = $this->instantiateRelatedModel();
+        else
+            $relatedModel = $loaded;
 
-        $dataProvider = $this->search($loaded, $params);
+        $owner = $this->getOwnerModel();
+
+        $params = $this->getParams();
+        $criteria = $this->createRelationCriteria($owner, $relatedModel);
+        $criteria->mergeWith($this->createEmbedCriteria($relatedModel));
+        $relatedModel->getDbCriteria()->mergeWith($criteria);
+        $dataProvider = $relatedModel->search($params);
         return array(200, $dataProvider);
     }
+
+
+
+
 
 
 }

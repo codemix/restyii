@@ -88,7 +88,7 @@ class Index extends Base
             if (substr($file,-14, 14) !== 'Controller.php')
                 continue;
             $id = lcfirst(substr(basename($file), 0, -14));
-            if (!in_array($id, $controllerNames))
+            if ($id !== 'default' && !in_array($id, $controllerNames))
                 $controllerNames[] = $id;
         }
         return $controllerNames;
