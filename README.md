@@ -3,6 +3,8 @@
 A RESTful HATEOAS compliant extension for Yii. Allows your application to serve and accept json, jsonp, xml, csv or html using the same code.
 
 
+## WARNING: Pre-alpha software, use at your own risk.
+
 # Installation.
 
 Install using composer. Requires php 5.3 or later.
