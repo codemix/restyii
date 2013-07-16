@@ -13,6 +13,9 @@ abstract class Root extends Base
             'index' => array(
                 'class' => 'Restyii\Action\Root\Index',
             ),
+            'guzzle' => array(
+                'class' => 'Restyii\Action\Root\Guzzle',
+            )
         );
     }
 }
