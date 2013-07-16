@@ -10,7 +10,7 @@ use \Restyii\Model\ModelInterface;
  *
  * @package Restyii\Action\Relation
  */
-abstract class Base extends \Restyii\Action\Base
+abstract class Base extends \Restyii\Action\Item\Base
 {
 
     /**
@@ -46,7 +46,7 @@ abstract class Base extends \Restyii\Action\Base
      */
     public function params()
     {
-        return array(
+        return \CMap::mergeArray(parent::params(), array(
             'relation' => array(
                 'label' => \Yii::t('resource', 'Relation Name'),
                 'description' => \Yii::t(
@@ -59,7 +59,7 @@ abstract class Base extends \Restyii\Action\Base
                 'required' => true,
                 'type' => 'string',
             )
-        );
+        ));
     }
 
 

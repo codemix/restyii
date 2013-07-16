@@ -5,7 +5,7 @@ namespace Restyii\Action\Item;
 /**
  * RESTful 'Update' Action
  */
-class Update extends Base
+class Update extends Base implements \Restyii\Action\SingularInterface
 {
     /**
      * @var string the HTTP verb for this action.

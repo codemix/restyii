@@ -5,7 +5,7 @@ namespace Restyii\Action\Item;
 /**
  * RESTful 'Delete' Action
  */
-class Delete extends Base
+class Delete extends Base implements \Restyii\Action\SingularInterface
 {
     /**
      * @var string the HTTP verb for this action.

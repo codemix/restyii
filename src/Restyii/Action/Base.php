@@ -127,6 +127,26 @@ abstract class Base extends \CAction
         return $className::model();
     }
 
+
+    public function createUrlTemplate()
+    {
+
+        $params = array();
+
+        $i = 1;
+        $replace = array();
+        foreach($this->params() as $name => $config) {
+            if (!empty($config['required'])) {
+                $params[$name] = '999'.$i;
+                $replace['999'.$i] = '{'.$name.'}';
+                $i++;
+            }
+        }
+        $url = $this->getController()->createUrl($this->getId(), $params);
+
+        return strtr($url, $replace);
+    }
+
     /**
      * Sets the scenario to use when dealing with models in this action
      * @param string $scenario the scenario name

@@ -50,47 +50,27 @@ class Index extends Base
      */
     public function perform($userInput, $loaded = null)
     {
-        $app = \Yii::app();
+        $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
+
+        \CVarDumper::dump($app->getSchema()->getServiceDescription(), 10, true);
+        die();
+
         $controller = $this->getController();
         $module = $controller->getModule();
-        if (!$module) {
+        if (!$module)
             $module = $app;
-            $baseRoute = '';
-        }
-        else
-            $baseRoute = $module->getId().'/';
 
-        $controllers = $this->getControllerInstances($module);
+        $controllers = $app->getSchema()->getControllerInstances($module);
         $data = array(
             'name' => $module->name,
             '_links' => array(),
         );
-        foreach($controllers as $id) {
+        foreach($controllers as $id => $controller) {
             $data['_links'][$id] = array(
-                'href' => $app->createUrl($baseRoute.$id.'/search'),
+                'href' => $controller->createUrl('search'), # $app->createUrl($baseRoute.$id.'/search'),
             );
         }
         return array(200, $data);
     }
 
-    /**
-     * @param \CWebApplication|\CModule $module
-     *
-     * @return array
-     */
-    protected function getControllerInstances(\CModule $module)
-    {
-        $items = array();
-        $files = \CFileHelper::findFiles($module->getControllerPath(), array('fileTypes' => array('php', 'level' => 0)));
-        $controllerNames = array_keys($module->controllerMap);
-
-        foreach($files as $file) {
-            if (substr($file,-14, 14) !== 'Controller.php')
-                continue;
-            $id = lcfirst(substr(basename($file), 0, -14));
-            if ($id !== 'default' && !in_array($id, $controllerNames))
-                $controllerNames[] = $id;
-        }
-        return $controllerNames;
-    }
 }

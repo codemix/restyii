@@ -5,7 +5,7 @@ namespace Restyii\Action\Item;
 /**
  * RESTful 'Read' Action
  */
-class Read extends Base
+class Read extends Base implements \Restyii\Action\SingularInterface
 {
     /**
      * @var string the HTTP verb for this action.
