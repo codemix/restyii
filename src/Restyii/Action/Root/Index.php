@@ -52,9 +52,6 @@ class Index extends Base
     {
         $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
 
-        \CVarDumper::dump($app->getSchema()->getServiceDescription(), 10, true);
-        die();
-
         $controller = $this->getController();
         $module = $controller->getModule();
         if (!$module)
