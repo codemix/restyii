@@ -2,7 +2,7 @@
 
 namespace Restyii\Action\Collection;
 
-class Bulk extends Base implements \Restyii\Action\MultipleInterface
+class Bulk extends Base implements \Restyii\Action\MultipleTargetInterface
 {
     /**
      * @var string the HTTP verb for this action.

@@ -5,7 +5,7 @@ namespace Restyii\Action\Item;
 /**
  * RESTful 'Replace' Action
  */
-class Replace extends Base implements \Restyii\Action\SingularInterface
+class Replace extends Base implements \Restyii\Action\SingleTargetInterface
 {
     /**
      * @var string the HTTP verb for this action.
