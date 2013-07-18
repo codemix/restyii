@@ -64,7 +64,7 @@ RAVE stands for:
 * __Events__
 
 
-Importantly, Resources, Actions, Views and Events all __descrbe__ themselves.
+Importantly, Resources, Actions, Views and Events all __describe__ themselves.
 This allows the RAVE application to be self-documenting.
 
 
@@ -88,6 +88,7 @@ Actions are analogous to the operations performed by a Controller in MVC.
 * Actions *should* accept any kind of resource. This promotes code reuse and is made possible by the rich meta data resources provide.
 * Actions know which http headers and query string parameters to expect and how to describe them.
 * Actions are associated with a specific HTTP verb that is used to perform an action, e.g. DELETE for delete actions.
+* Actions return a HTTP status code along with their data.
 
 Actions usually operate either on individual resources or collections of resources.
 
@@ -115,13 +116,13 @@ the normal `SiteController` should be renamed. `DefaultController` should extend
 * The request (`Yii::app()->request`) now has a `getResponse()` method that returns a `Restyii\Web\Response`
   instance. This response instance is responsible for formatting and sending the data to the client.
 
-* Controllers should __always__ use class based actions, and controllers are explicitly tied to resource types. Resource controllers extend `Restyii\Controller\Model`
+* Controllers __always__ use class based actions, and controllers are explicitly tied to resource types. Resource controllers extend `Restyii\Controller\Model`
 
-* Actions should __always__ extend the `Restyii\Action\Base` class
+* Actions __always__ extend the `Restyii\Action\Base` class
 
 * Rather than implementing `run()`, actions should implement `present()` and `perform()` methods.
 
-* Rather than calling `$this->render(...)`, actions should return the data for the response from within the `present()` and `perform()` methods.
+* Rather than calling `$this->render(...)`, actions should return the data for the response from within the `present()` and `perform()` methods, along with the appropriate HTTP status code.
 
 * Application has a `schema` component that introspects the application and determines the available resources, actions etc.
 
