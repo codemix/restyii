@@ -55,6 +55,11 @@ class ActiveDataProvider extends \CActiveDataProvider implements DataProviderInt
                     'title' => $this->model->classLabel(true),
                     'href' => $pagination->createPageUrl($controller, 0),
                 ),
+                'page' => array(
+                    'title' => \Yii::t('resource', 'Page'),
+                    'href' => str_replace('999', '{page}', $pagination->createPageUrl($controller, 998)),
+                    'templated' => true,
+                ),
                 'firstPage' => array(
                     'title' => \Yii::t('resource', 'First Page'),
                     'href' => $pagination->createPageUrl($controller, 0),
@@ -67,7 +72,7 @@ class ActiveDataProvider extends \CActiveDataProvider implements DataProviderInt
                     'href' => $pagination->createPageUrl($controller, $currentPage - 1),
                 );
             }
-            if ($totalPages < $currentPage + 1) {
+            if ($totalPages < $currentPage + 2) {
                 $links['nextPage'] = array(
                     'title' => \Yii::t('resource', 'Next Page'),
                     'href' => $pagination->createPageUrl($controller, $currentPage + 1),

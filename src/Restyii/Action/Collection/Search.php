@@ -43,6 +43,18 @@ class Search extends Base implements \Restyii\Action\MultipleTargetInterface
                 'required' => false,
                 'type' => 'string',
             ),
+            'page' => array(
+                'label' => \Yii::t('resource', 'Page'),
+                'description' => \Yii::t('resource', 'The number of the page'),
+                'required' => false,
+                'type' => 'integer',
+            ),
+            'limit' => array(
+                'label' => \Yii::t('resource', 'Limit'),
+                'description' => \Yii::t('resource', 'The number of results to return per page'),
+                'required' => false,
+                'type' => 'integer',
+            ),
             '_embed' => array(
                 'label' => \Yii::t('resource', 'Embed'),
                 'description' => \Yii::t('resource', 'The comma separated names of the links to embed in the results.'),

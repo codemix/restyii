@@ -442,7 +442,8 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             'params' => $params,
             'pagination' => array(
                 'pageVar' => 'page',
-                'pageSize' => isset($params['size']) ? $params['size'] : 20,
+                'pageSize' => isset($params['limit']) ? $params['limit'] : 20,
+                'validateCurrentPage' => false,
             )
         ));
     }
