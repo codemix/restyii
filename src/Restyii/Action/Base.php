@@ -482,8 +482,43 @@ abstract class Base extends \CAction
                 $params[$name] = $context[$name];
             else if (!empty($config['required']))
                 throw new \CHttpException(400, \Yii::t('resource', 'Missing {name} parameter', array('{name}' => $name)));
+            else if (array_key_exists('default', $config))
+                $params[$name] = $config['default'];
+            else
+                continue;
+
+            if (isset($config['type']))
+                $params[$name] = $this->castValue($config['type'], $params[$name]);
         }
         return $params;
+    }
+
+    /**
+     * Attempt to cast a value to a given type
+     * @param string $type the name of the type to cast to
+     * @param mixed $value the value to cast
+     *
+     * @return mixed the type cast value
+     */
+    public function castValue($type, $value)
+    {
+        switch ($type) {
+            case "string":
+                return (string) $value;
+            case "integer";
+                return (int) $value;
+            case "float";
+            case "double";
+                return (float) $value;
+            case "boolean";
+                return (bool) $value;
+            case "array";
+                return (array) $value;
+            case "object";
+                return (object) $value;
+            default:
+                return $value;
+        }
     }
 
     /**

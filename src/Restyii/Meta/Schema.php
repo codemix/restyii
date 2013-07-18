@@ -3,8 +3,8 @@
 namespace Restyii\Meta;
 
 
-use Restyii\Action\MultipleInterface;
-use Restyii\Action\SingularInterface;
+use Restyii\Action\MultipleTargetInterface;
+use Restyii\Action\SingleTargetInterface;
 
 class Schema extends \CApplicationComponent
 {
@@ -45,7 +45,7 @@ class Schema extends \CApplicationComponent
         foreach($schema['controllers'] as $controllerId => $controllerConfig) {
             $controller = $controllerConfig['instance']; /** @var \Restyii\Controller\Base $controller */
             foreach($controllerConfig['actions'] as $actionId => $action /* @var \Restyii\Action\Base $action */) {
-                if (!($action instanceof MultipleInterface) && !($action instanceof SingularInterface))
+                if (!($action instanceof MultipleTargetInterface) && !($action instanceof SingleTargetInterface))
                     continue;
                 $modelClass = $action->getModelClass();
                 if (!isset($modelClasses[$modelClass]))
@@ -54,7 +54,7 @@ class Schema extends \CApplicationComponent
                     'httpMethod' => $action->verb,
                     'uri' => $action->createUrlTemplate(),
                     'summary' => $action->description(),
-                    'responseClass' => $action instanceof MultipleInterface ? $modelClass.'Collection' : $modelClass,
+                    'responseClass' => $action instanceof MultipleTargetInterface ? $modelClass.'Collection' : $modelClass,
                     'parameters' => array_map(
                         function($config) {
                             return array(

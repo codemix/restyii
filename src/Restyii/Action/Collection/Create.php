@@ -5,7 +5,7 @@ namespace Restyii\Action\Collection;
 /**
  * RESTful 'Create' Action
  */
-class Create extends Base  implements \Restyii\Action\SingularInterface
+class Create extends Base  implements \Restyii\Action\SingleTargetInterface
 {
     /**
      * @var string the HTTP verb for this action.

@@ -125,6 +125,8 @@ abstract class Base extends \CComponent
             $containerName = lcfirst(get_class($model));
         $prepared = array(
             'total' => (int) $dataProvider->getTotalItemCount(),
+            'limit' => $pagination ? $pagination->getPageSize() : null,
+            'currentPage' => $pagination ? $pagination->getCurrentPage() + 1 : null,
             'params' => $dataProvider->getParams(),
             '_embedded' => array(
                 $containerName => $data

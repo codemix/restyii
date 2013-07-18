@@ -4,7 +4,7 @@ namespace Restyii\Action\Relation;
 
 use Restyii\Model\ActiveRecord;
 
-class Search extends Base implements \Restyii\Action\MultipleInterface
+class Search extends Base implements \Restyii\Action\MultipleTargetInterface
 {
     /**
      * @var string the HTTP verb for this action.
