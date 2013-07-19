@@ -55,29 +55,37 @@ class ActiveDataProvider extends \CActiveDataProvider implements DataProviderInt
                     'title' => $this->model->classLabel(true),
                     'href' => $pagination->createPageUrl($controller, 0),
                 ),
-                'firstPage' => array(
+                'page' => array(
+                    'title' => \Yii::t('resource', 'Page'),
+                    'href' => str_replace('999', '{page}', $pagination->createPageUrl($controller, 998)),
+                    'templated' => true,
+                ),
+
+            );
+            if ($currentPage > 0) {
+                $links['firstPage'] = array(
                     'title' => \Yii::t('resource', 'First Page'),
                     'href' => $pagination->createPageUrl($controller, 0),
-                ),
-            );
-
+                );
+            }
             if ($currentPage > 0) {
                 $links['prevPage'] = array(
                     'title' => \Yii::t('resource', 'Previous Page'),
                     'href' => $pagination->createPageUrl($controller, $currentPage - 1),
                 );
             }
-            if ($totalPages < $currentPage + 1) {
+            if ($totalPages > $currentPage + 1) {
                 $links['nextPage'] = array(
                     'title' => \Yii::t('resource', 'Next Page'),
                     'href' => $pagination->createPageUrl($controller, $currentPage + 1),
                 );
             }
-
-            $links['lastPage'] = array(
-                'title' => \Yii::t('resource', 'Last Page'),
-                'href' => $pagination->createPageUrl($controller, $totalPages - 1),
-            );
+            if ($totalPages > 1) {
+                $links['lastPage'] = array(
+                    'title' => \Yii::t('resource', 'Last Page'),
+                    'href' => $pagination->createPageUrl($controller, $totalPages - 1),
+                );
+            }
         }
         else {
             $links = array(

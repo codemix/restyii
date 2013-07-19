@@ -8,7 +8,7 @@ namespace Restyii\Action;
  *
  * @package Restyii\Action
  */
-interface MultipleInterface extends \IAction
+interface MultipleTargetInterface extends \IAction
 {
 
 }
