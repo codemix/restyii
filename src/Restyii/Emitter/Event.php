@@ -2,6 +2,11 @@
 
 namespace Restyii\Emitter;
 
+/**
+ * Base class for events that get sent on the message bus
+ *
+ * @package Restyii\Emitter
+ */
 class Event extends \CModelEvent
 {
     /**

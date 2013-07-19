@@ -3,15 +3,17 @@
 namespace Restyii\Emitter;
 
 
+use CComponent;
 use CEvent;
 use CModelEvent;
 use Restyii\Model\ActiveRecord;
 
 /**
- * Class Behavior
- * @package Restyii\Emitter
+ * # Emitter Behavior
  *
- * @method ActiveRecord getOwner() the owner component that this behavior is attached to.
+ * Allows resources to broadcast their change events via message queues
+ *
+ * @package Restyii\Emitter
  */
 class Behavior extends \CActiveRecordBehavior
 {
@@ -67,7 +69,7 @@ class Behavior extends \CActiveRecordBehavior
             $app = \Yii::app();
             if (!$app->hasComponent('eventStream'))
                 throw new \CException(__CLASS__." expects an 'eventStream' app component!");
-            $this->_eventStream = $app->getComponent('channel');
+            $this->_eventStream = $app->getComponent('eventStream');
         }
 
         return $this->_eventStream;
@@ -79,7 +81,7 @@ class Behavior extends \CActiveRecordBehavior
      *
      * @param CEvent $event the event being raised
      */
-    protected function afterFind($event)
+    public function afterFind($event)
     {
         $this->_oldAttributes = $event->sender->getAttributes();
     }
@@ -89,9 +91,10 @@ class Behavior extends \CActiveRecordBehavior
      *
      * @param CModelEvent $event the event being raised
      */
-    protected function afterSave($event)
+    public function afterSave($event)
     {
         $diff = $this->diff();
+
         $this->emit($event->sender->scenario, $diff);
     }
 
@@ -100,7 +103,7 @@ class Behavior extends \CActiveRecordBehavior
      *
      * @param CEvent $event the event being raised
      */
-    protected function afterDelete($event)
+    public function afterDelete($event)
     {
         $this->emit("delete");
     }

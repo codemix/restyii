@@ -2,6 +2,10 @@
 
 namespace Restyii\Emitter;
 
+/**
+ * Interface for event streams
+ * @package Restyii\Emitter
+ */
 interface EventStreamInterface
 {
     /**
