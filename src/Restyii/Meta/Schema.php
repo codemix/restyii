@@ -5,6 +5,7 @@ namespace Restyii\Meta;
 
 use Restyii\Action\MultipleTargetInterface;
 use Restyii\Action\SingleTargetInterface;
+use Restyii\Model\ActiveRecord;
 
 class Schema extends \CApplicationComponent
 {
@@ -69,23 +70,90 @@ class Schema extends \CApplicationComponent
             }
         }
         foreach($modelClasses as $name => $model /* @var \Restyii\Model\ActiveRecord $model */) {
-            $config = array(
-                'type' => 'object',
-                'properties' => array(),
-            );
-            foreach($model->getVisibleAttributeNames() as $attribute) {
-                $config['properties'][$attribute] = array(
-                    'location' => 'json',
-                    'type' => $model->getAttributeType($attribute),
-                );
-            }
-            $desc['models'][$name] = $config;
-            $desc['models'][$name.'Collection'] = array('type' => 'array', 'items' => $config);
+            $desc['models'][$name] = $this->createModelDefinition($name, $model);
+            $desc['models'][$name.'Collection'] = $this->createCollectionDefinition($name, $model);
 
         }
         return $desc;
     }
 
+    /**
+     * Creates a collection definition
+     * @param string $name the name of the collection
+     * @param ActiveRecord $model the model
+     *
+     * @return array the definition config
+     */
+    protected function createCollectionDefinition($name, ActiveRecord $model)
+    {
+        return array(
+            'properties' => array(
+                'total' => array(
+                    'location' => 'json',
+                    'type' => 'integer',
+                ),
+                'totalPages' => array(
+                    'location' => 'json',
+                    'type' => 'integer',
+                ),
+                'params' => array(
+                    'location' => 'json',
+                    'type' => 'object',
+                    'properties' => array(
+                        'q' => array(
+                            'location' => 'json',
+                            'type' => 'string',
+                        ),
+                        '_embed' => array(
+                            'location' => 'json',
+                            'type' => 'string',
+                        )
+                    ),
+                ),
+                '_embedded' => array(
+                    'location' => 'json',
+                    'type' => 'object',
+                    'properties' => array(
+                        $model->controllerID() => array(
+                            'location' => 'json',
+                            'type' => 'array',
+                            'items' => array(
+                                'location' => 'json',
+                                'type' => 'object',
+                                'instanceOf' => get_class($model),
+                            ),
+                        )
+                    ),
+                ),
+                '_links' => array(
+                    'location' => 'json',
+                    'type' => 'object',
+                ),
+            ),
+        );
+    }
+
+    /**
+     * Creates a model definition
+     * @param string $name the name of the model
+     * @param ActiveRecord $model the model
+     *
+     * @return array the definition config
+     */
+    public function createModelDefinition($name, ActiveRecord $model)
+    {
+        $config = array(
+            'type' => 'object',
+            'properties' => array(),
+        );
+        foreach($model->getVisibleAttributeNames() as $attribute) {
+            $config['properties'][$attribute] = array(
+                'location' => 'json',
+                'type' => $model->getAttributePrimitive($attribute),
+            );
+        }
+        return $config;
+    }
 
     public function getModuleSchema($parentModule = null)
     {
