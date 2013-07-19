@@ -3,7 +3,11 @@
 namespace Restyii\Emitter;
 
 /**
- * Base class for event streams
+ * # AMQP Event Stream,
+ *
+ * Depends on the YiiAMQP extension.
+ *
+ *
  * @package Restyii\Emitter
  */
 class AMQPEventStream extends \CApplicationComponent implements EventStreamInterface
@@ -40,7 +44,7 @@ class AMQPEventStream extends \CApplicationComponent implements EventStreamInter
      * Gets the AMQP client for the event stream.
      *
      * @throws \CException if the required app component does not exist
-     * @return \IApplicationComponent the AMQP app component
+     * @return \YiiAMQP\Client the AMQP client component
      */
     public function getAmqpClient()
     {
@@ -64,7 +68,9 @@ class AMQPEventStream extends \CApplicationComponent implements EventStreamInter
      */
     public function publish(Event $event)
     {
-        $this->getAmqpClient()->sendJSONMessage(json_encode($event->toJSON()), $this->createRoutingKey($event));
+        #$this->getAmqpClient()->sendJSONMessage(json_encode($event->toJSON()), $this->createRoutingKey($event));
+        $exchange = $this->getAmqpClient()->getExchanges()->itemAt(get_class($event->sender));
+        $exchange->send($event->toJSON());
     }
 
 

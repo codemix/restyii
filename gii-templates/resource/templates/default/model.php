@@ -142,6 +142,18 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
     /**
      * @inheritDoc
      */
+    public function behaviors()
+    {
+        return array(
+            'Emitter' => array(
+                'class' => 'Restyii\Emitter\Behavior',
+            ),
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function rules()
     {
         return array(
