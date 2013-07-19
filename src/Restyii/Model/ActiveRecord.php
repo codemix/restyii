@@ -89,6 +89,15 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
+     * Declares the primitive types for the attributes.
+     * @return array the attribute types, attribute => type
+     */
+    public function attributePrimitives()
+    {
+        return array();
+    }
+
+    /**
      * Gets the names of the formats for the attributes.
      * @return array the attribute types, attribute => type
      */
@@ -166,6 +175,29 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             return $column->type;
     }
 
+    /**
+     * Gets the appropriate primitive type for a given attribute
+     * @param string $attribute the name of the attribute
+     *
+     * @return string the attribute type, e.g. 'string' or 'integer'
+     */
+    public function getAttributePrimitive($attribute)
+    {
+        $primitives = $this->attributePrimitives();
+        if (isset($primitives[$attribute]))
+            return $primitives[$attribute];
+        $type = $this->getAttributeType($attribute);
+        switch($type) {
+            case 'integer';
+            case 'float';
+            case 'boolean';
+            case 'string';
+                return $type;
+            default;
+                return 'string';
+        }
+
+    }
 
     /**
      * Gets the name of the format for the given attribute.
