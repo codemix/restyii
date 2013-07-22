@@ -2,6 +2,8 @@
 
 namespace Restyii\Action\Generic;
 
+use Restyii\Action\MultipleTargetInterface;
+use Restyii\Action\SingleTargetInterface;
 use \Restyii\Model\ActiveRecord;
 
 class Options extends Base
@@ -80,7 +82,7 @@ class Options extends Base
     {
         $model->setScenario('read');
         foreach($actions as $name => $action) {
-            if ($action instanceof \Restyii\Action\Collection\Base)
+            if ($action instanceof MultipleTargetInterface)
                 unset($actions[$name]);
             else
                 $actions[$name] = $this->prepareAction($action);
@@ -105,18 +107,23 @@ class Options extends Base
     protected function performCollection($actions, ActiveRecord $model)
     {
         $model->setScenario('create');
+        $itemActions = array();
+        $collectionActions = array();
         foreach($actions as $name => $action) {
-            if (!($action instanceof \Restyii\Action\Collection\Base))
-                unset($actions[$name]);
+            if ($action instanceof MultipleTargetInterface)
+                $collectionActions[$name] = $this->prepareAction($action);
+            else if ($action instanceof SingleTargetInterface)
+                $itemActions[$name] = $this->prepareAction($action);
             else
-                $actions[$name] = $this->prepareAction($action);
+                unset($actions[$name]);
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
             'label' => $model->classLabel(),
             'collectionLabel' => $model->classLabel(true),
             'attributes' => $attributes,
-            'actions' => $actions
+            'itemActions' => $itemActions,
+            'collectionActions' => $collectionActions,
         ));
     }
 
@@ -129,21 +136,28 @@ class Options extends Base
     protected function getAttributeConfigs(ActiveRecord $model)
     {
         $attributes = array();
+        $pk = $model->getTableSchema()->primaryKey;
         foreach($model->getVisibleAttributeNames() as $attribute) {
             $validators = array();
             foreach($model->getValidators($attribute) as $validator /* @var \CValidator $validator */) {
                 if ($validator->enableClientValidation && ($js = $validator->clientValidateAttribute($model, $attribute)) !== null)
                     $validators[] = $js;
             }
+            if (is_array($pk))
+                $isPk = in_array($attribute, $pk);
+            else
+                $isPk = $attribute == $pk;
             $attributes[$attribute] = array(
                 'label' => $model->getAttributeLabel($attribute),
                 'description' => $model->getAttributeDescription($attribute),
+                'primitive' => $model->getAttributePrimitive($attribute),
                 'type' => $model->getAttributeType($attribute),
                 'format' => $model->getAttributeFormat($attribute),
                 'input' => $model->getAttributeInput($attribute),
-                'writable' => $model->isAttributeSafe($attribute),
-                'required' => $model->isAttributeRequired($attribute),
                 'validators' => $validators,
+                'isWritable' => $model->isAttributeSafe($attribute),
+                'isRequired' => $model->isAttributeRequired($attribute),
+                'isPrimaryKey' => (bool) $isPk,
             );
         }
         return $attributes;
