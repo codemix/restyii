@@ -1,10 +1,10 @@
 <?php
 
-namespace Restyii\Emitter;
+namespace Restyii\Event;
 
 /**
  * Base class for event streams
- * @package Restyii\Emitter
+ * @package Restyii\Event
  */
 abstract class AbstractEventStream extends \CApplicationComponent implements EventStreamInterface
 {

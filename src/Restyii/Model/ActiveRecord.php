@@ -1,6 +1,7 @@
 <?php
 
 namespace Restyii\Model;
+use CEvent;
 
 /**
  * Base class for RESTful active records
@@ -9,6 +10,11 @@ namespace Restyii\Model;
  */
 abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
 {
+    /**
+     * @var array the old attributes of the model
+     */
+    protected $_oldAttributes = array();
+
     /**
      * Returns the name to use for this particular resource instance.
      * The result of this function will be used as default anchor text when
@@ -38,15 +44,6 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         else
             $label = get_class($this);
         return $this->generateAttributeLabel($label);
-    }
-
-    /**
-     * Returns the label to use for collections of resources of this type.
-     * @return string the collection label for this resource
-     */
-    public function collectionLabel()
-    {
-        return $this->generateAttributeLabel($this->pluralize(get_class($this)));
     }
 
     /**
@@ -346,7 +343,6 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $attributes = array();
         $visibilities = $this->attributeVisibilities();
 
-
         $pk = $this->getTableSchema()->primaryKey;
         if (is_array($pk)) {
             foreach($pk as $name) {
@@ -372,6 +368,59 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         }
         return $attributes;
     }
+
+    /**
+     * @param array $oldAttributes
+     */
+    public function setOldAttributes($oldAttributes)
+    {
+        $this->_oldAttributes = $oldAttributes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOldAttributes()
+    {
+        return $this->_oldAttributes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function afterFind()
+    {
+        parent::afterFind();
+        $this->_oldAttributes = $this->getAttributes();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function afterSave()
+    {
+        parent::afterSave();
+        $this->_oldAttributes = $this->getAttributes();
+    }
+
+
+    /**
+     * Returns the difference between the old attributes and the new attributes
+     * of the owner model.
+     * @return array a collection of attributes, name => array(oldValue, newValue)
+     */
+    public function diff()
+    {
+        $oldAttributes = $this->getOldAttributes();
+        $diff = array();
+        foreach($this->getAttributes() as $attribute => $value)
+            if (!array_key_exists($attribute, $oldAttributes))
+                $diff[$attribute] = array(null, $value);
+            else if ($oldAttributes[$attribute] != $value)
+                $diff[$attribute] = array($oldAttributes[$attribute], $value);
+        return $diff;
+    }
+
 
     /**
      * Creates a URL for this resource.

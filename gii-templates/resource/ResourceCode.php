@@ -197,8 +197,6 @@ class ResourceCode extends CCodeModel
 		$class=@Yii::import($this->baseClass,true);
 		if(!is_string($class) || !$this->classExists($class))
 			$this->addError('baseClass', "Class '{$this->baseClass}' does not exist or has syntax error.");
-		elseif($class!=='CActiveRecord' && !is_subclass_of($class,'CActiveRecord'))
-			$this->addError('baseClass', "'{$this->model}' must extend from CActiveRecord.");
 	}
 
 	public function getTableSchema($tableName)
@@ -530,6 +528,7 @@ class ResourceCode extends CCodeModel
                 $links[$className0][$linkName]= array(
                     "title" => "Yii::t('".lcfirst($className0)."', \"".$this->generateLabel($linkName)."\")",
                     "href" => "\$this->createUrl('read', array('relation' => '$linkName'))",
+                    "profile" => 'array("'.$className1.'")'
                 );
 
                 $linkName=$this->generateRelationName($table1, $table0, true);
@@ -542,6 +541,7 @@ class ResourceCode extends CCodeModel
                 $links[$className1][$linkName]= array(
                     "title" => "Yii::t('".lcfirst($className1)."', \"".$this->generateLabel($linkName)."\")",
                     "href" => "\$this->createUrl('read', array('relation' => '$linkName'))",
+                    "profile" => 'array("'.$className0.'")'
                 );
             }
             else
@@ -556,10 +556,10 @@ class ResourceCode extends CCodeModel
 
                     // Add link for this table
                     $linkName=$this->generateRelationName($tableName, $fkName, false);
-                    $links[$className][$linkName]="array(self::BELONGS_TO, '$refClassName', '$fkName')";
                     $links[$className][$linkName]= array(
                         "title" => "Yii::t('".lcfirst($className)."', \"".$this->generateLabel($linkName)."\")",
                         "href" => "$refClassName::model()->createUrl('read', array('$refKey' => \$this->$fkName))",
+                        "profile" => '"'.$refClassName.'"',
                     );
                     // Add relation for the referenced table
                     $linkType=$table->primaryKey === $fkName
@@ -573,6 +573,7 @@ class ResourceCode extends CCodeModel
                     $links[$refClassName][$linkName] = array(
                         "title" => "Yii::t('".lcfirst($refClassName)."', \"".$this->generateLabel($linkName)."\")",
                         "href" => $linkType,
+                        "profile" => $linkType=$table->primaryKey === $fkName ? '"'.$className.'"' : 'array("'.$className.'")',
                     );
 
                 }

@@ -21,9 +21,9 @@ with
 in your `index.php` file.
 
 
-# Configuration.
+# Server Configuration.
 
-Example Restyii application config
+Example Restyii server application config
 
     <?php
     Yii::setPathOfAlias('vendor', __DIR__.'/../../vendor'); // the path to the composer vendors dir
@@ -51,6 +51,24 @@ Example Restyii application config
 
 
 Restyii comes with a Gii code generator that makes generating resources easy.
+
+
+# Client Configuration.
+
+Example Restyii client application config
+
+    <?php
+    return array(
+      'name' => 'Restyii Client Demo',
+      'import' => array(
+        'application.resources.*',
+      ),
+      'components' => array(
+            ...
+      ),
+    );
+
+
 
 
 # RAVE

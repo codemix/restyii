@@ -121,11 +121,13 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
             "self" => array(
                 "title" => $this->instanceLabel(),
                 "href" => $this->createUrl("read"),
+                "profile" => get_class($this),
             ),
 <?php foreach($links as $name=>$link): ?>
             "<?=$name?>" => array(
                 "title" => <?=$link['title']?>,
                 "href" => <?=$link['href']?>,
+                "profile" => <?=$link['profile']?>,
             ),
 <?php endforeach; ?>
         );
@@ -137,6 +139,18 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
     public function tableName()
     {
         return '<?php echo $tableName; ?>';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function behaviors()
+    {
+        return array(
+            'EventEmitter' => array(
+                'class' => 'Restyii\Event\EmitterBehavior',
+            ),
+        );
     }
 
     /**
