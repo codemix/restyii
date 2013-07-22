@@ -41,15 +41,6 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
-     * Returns the label to use for collections of resources of this type.
-     * @return string the collection label for this resource
-     */
-    public function collectionLabel()
-    {
-        return $this->generateAttributeLabel($this->pluralize(get_class($this)));
-    }
-
-    /**
      * Returns the url name to use when creating links to this resource.
      * This is usually equal to the route to the default controller that
      * deals with resources of this type.
