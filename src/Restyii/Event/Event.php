@@ -1,11 +1,11 @@
 <?php
 
-namespace Restyii\Emitter;
+namespace Restyii\Event;
 
 /**
  * Base class for events that get sent on the message bus
  *
- * @package Restyii\Emitter
+ * @package Restyii\Event
  */
 class Event extends \CModelEvent
 {

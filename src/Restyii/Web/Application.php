@@ -5,6 +5,17 @@ namespace Restyii\Web;
 
 use CUrlManager;
 
+/**
+ * # Web Application
+ *
+ * @property \Restyii\Meta\Schema $schema the application schema
+ * @property \Restyii\Web\UrlManager $urlManager the url manager
+ * @property \Restyii\Web\Request $request the http request
+ * @property \Restyii\Event\AbstractEventStream $eventStream the application event stream
+ *
+ * @author Charles Pick <charles@codemix.com>
+ * @package Restyii\Web
+ */
 class Application extends \CWebApplication
 {
 
@@ -66,5 +77,11 @@ class Application extends \CWebApplication
         return $this->getComponent('schema');
     }
 
-
+    /**
+     * @return \Restyii\Event\AbstractEventStream the application event stream
+     */
+    public function getEventStream()
+    {
+        return $this->getComponent('eventStream');
+    }
 }

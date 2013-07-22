@@ -1,10 +1,10 @@
 <?php
 
-namespace Restyii\Emitter;
+namespace Restyii\Event;
 
 /**
  * Interface for event streams
- * @package Restyii\Emitter
+ * @package Restyii\Event
  */
 interface EventStreamInterface
 {

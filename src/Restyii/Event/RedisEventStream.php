@@ -1,6 +1,6 @@
 <?php
 
-namespace Restyii\Emitter;
+namespace Restyii\Event;
 
 /**
  * # Redis Event Stream
@@ -8,7 +8,7 @@ namespace Restyii\Emitter;
  * Publishes messages to redis channels.
  * Depends on the YiiRedis extension
  *
- * @package Restyii\Emitter
+ * @package Restyii\Event
  */
 class RedisEventStream extends AbstractEventStream
 {

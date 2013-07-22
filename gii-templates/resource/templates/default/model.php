@@ -147,8 +147,8 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
     public function behaviors()
     {
         return array(
-            'Emitter' => array(
-                'class' => 'Restyii\Emitter\Behavior',
+            'EventEmitter' => array(
+                'class' => 'Restyii\Event\EmitterBehavior',
             ),
         );
     }
