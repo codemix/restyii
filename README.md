@@ -66,6 +66,10 @@ Example Restyii client application config
         'application.resources.*',
       ),
       'components' => array(
+            'api' => array(
+                'class' => 'Restyii\\Client\\Connection',
+                'baseUrl' => 'http://yourapihostname/',
+            ),
             ...
       ),
     );
