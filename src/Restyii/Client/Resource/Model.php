@@ -122,9 +122,9 @@ class Model extends \CModel
                 $required[] = $name;
             }
             if ($attribute->isWritable) {
-                if (!isset($types[$attribute->type]))
-                    $types[$attribute->type] = array();
-                $types[$attribute->type][] = $name;
+                if (!isset($types[$attribute->primitive]))
+                    $types[$attribute->primitive] = array();
+                $types[$attribute->primitive][] = $name;
             }
         }
 
@@ -1476,6 +1476,11 @@ class Model extends \CModel
                 $record->setLinks($attributes['_links']);
                 unset($attributes['_links']);
             }
+            if (isset($attributes['_errors'])) {
+                $record->addErrors($attributes['_errors']);
+                unset($attributes['_errors']);
+            }
+
             $record->setLinked($attributes);
             foreach($attributes as $name=>$value)
             {
