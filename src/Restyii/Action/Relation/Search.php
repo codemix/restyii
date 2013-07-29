@@ -17,8 +17,8 @@ class Search extends Base implements \Restyii\Action\MultipleTargetInterface
      */
     public function label()
     {
-        return \Yii::t('resource', "Search {collectionLabel}", array(
-            '{collectionLabel}' => $this->staticModel()->classLabel(true)
+        return \Yii::t('resource', "Search {resourceLabel} Relations", array(
+            '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
 
@@ -28,7 +28,7 @@ class Search extends Base implements \Restyii\Action\MultipleTargetInterface
     public function description()
     {
         $model = $this->staticModel();
-        return \Yii::t('resource', "Searches for {collectionLabel} that optionally match a given filter.", array(
+        return \Yii::t('resource', "Searches for {resourceLabel} relations that optionally match a given filter.", array(
             '{resourceLabel}' => $model->classLabel(),
             '{collectionLabel}' => $model->classLabel(true),
         ));

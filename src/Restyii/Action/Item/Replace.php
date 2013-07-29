@@ -13,12 +13,6 @@ class Replace extends Base implements \Restyii\Action\SingleTargetInterface
     public $verb = "PUT";
 
     /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
-
-
-    /**
      * @inheritDoc
      */
     public function label()

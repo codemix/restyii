@@ -164,6 +164,8 @@ abstract class Base extends \CComponent
 
         if ($model->hasErrors())
             $prepared['_errors'] = $model->getErrors();
+        if ($model->getIsDeleted())
+            $prepared['_deleted'] = true;
         $prepared['_links'] = $links;
         return $prepared;
     }

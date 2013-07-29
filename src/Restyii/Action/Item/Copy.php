@@ -13,11 +13,6 @@ class Copy extends Base implements \Restyii\Action\SingleTargetInterface
     public $verb = "COPY";
 
     /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
-
-    /**
      * @inheritDoc
      */
     public function label()
