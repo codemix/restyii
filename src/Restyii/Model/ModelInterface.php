@@ -32,7 +32,7 @@ interface ModelInterface
     /**
      * Returns the links to other related resources.
      *
-     * @return array the links for this resource, name => array("href" => "...", "label" => ",,"), ...
+     * @return array the links for this resource, name => array("href" => "...", "title" => ",,"), ...
      */
     public function links();
 
