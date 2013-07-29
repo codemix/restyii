@@ -17,6 +17,11 @@ abstract class Base extends \CAction
     public $verb = 'GET';
 
     /**
+     * @var bool whether or not to enable caching for this action, defaults to false
+     */
+    public $enableCache = false;
+
+    /**
      * @var array the parameters for the action
      */
     protected $_params;
@@ -127,12 +132,13 @@ abstract class Base extends \CAction
         return $className::model();
     }
 
-
+    /**
+     * Creates a url template for the action.
+     * @return string the url template
+     */
     public function createUrlTemplate()
     {
-
         $params = array();
-
         $i = 1;
         $replace = array();
         foreach($this->params() as $name => $config) {
@@ -261,7 +267,7 @@ abstract class Base extends \CAction
         $criteria = $this->getCriteria();
         $criteria->mergeWith($this->createEmbedCriteria($finder));
         $finder->getDbCriteria()->mergeWith($criteria);
-        if (($cache = $this->getCache()) !== false) {
+        if ($this->enableCache && ($cache = $this->getCache()) !== false) {
             $cacheKey = $cache->createKey($finder, array($pk));
             $fromCache = $cache->read($cacheKey);
             if ($fromCache)
@@ -273,7 +279,7 @@ abstract class Base extends \CAction
         $model = $finder->findByPk($pk);
         if (!is_object($model))
             throw new \CHttpException(404, 'The specified resource cannot be found.');
-        if ($cache)
+        if ($this->enableCache && !empty($cache))
             $cache->write($cacheKey, $model);
         return $model;
     }
@@ -319,7 +325,7 @@ abstract class Base extends \CAction
         $criteria->mergeWith($this->createEmbedCriteria($finder));
         $finder->getDbCriteria()->mergeWith($criteria);
         $dataProvider = $finder->search($params);
-        if (($cache = $this->getCache()) !== false) {
+        if ($this->enableCache && ($cache = $this->getCache()) !== false) {
             $cacheKey = $cache->createKey($dataProvider, $params);
             $fromCache = $cache->read($cacheKey);
             if ($fromCache)
@@ -383,6 +389,8 @@ abstract class Base extends \CAction
      */
     public function run()
     {
+        $controller = $this->getController();
+        $controller->setPageTitle($this->label());
         $userInput = $this->getUserInput();
         $requestType = \Yii::app()->getRequest()->getRequestType();
         if ($requestType != $this->verb) {

@@ -17,7 +17,7 @@ class Read extends Base implements \Restyii\Action\SingleTargetInterface
      */
     public function label()
     {
-        return \Yii::t('resource', "Read {resourceLabel}", array(
+        return \Yii::t('resource', "Read {resourceLabel} Relation", array(
             '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
@@ -28,7 +28,7 @@ class Read extends Base implements \Restyii\Action\SingleTargetInterface
     public function description()
     {
         $model = $this->staticModel();
-        return \Yii::t('resource', "Read the specified {resourceLabel}.", array(
+        return \Yii::t('resource', "Read a relation for the specified {resourceLabel}.", array(
             '{resourceLabel}' => $model->classLabel(),
         ));
     }

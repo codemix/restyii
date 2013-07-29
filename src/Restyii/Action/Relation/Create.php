@@ -12,18 +12,13 @@ class Create extends Base implements \Restyii\Action\SingleTargetInterface
      */
     public $verb = "POST";
 
-    /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
-
 
     /**
      * @inheritDoc
      */
     public function label()
     {
-        return \Yii::t('resource', "Create {resourceLabel}", array(
+        return \Yii::t('resource', "Create {resourceLabel} Relation", array(
             '{resourceLabel}' => $this->staticModel()->classLabel()
         ));
     }
@@ -34,7 +29,7 @@ class Create extends Base implements \Restyii\Action\SingleTargetInterface
     public function description()
     {
         $model = $this->staticModel();
-        return \Yii::t('resource', "Creates a new {resourceLabel}.", array(
+        return \Yii::t('resource', "Creates a new relation for a given {resourceLabel}.", array(
             '{resourceLabel}' => $model->classLabel(),
             '{collectionLabel}' => $model->classLabel(true),
         ));
@@ -71,7 +66,7 @@ class Create extends Base implements \Restyii\Action\SingleTargetInterface
         if ($loaded === null)
             $loaded = $this->instantiateRelatedModel();
         if ($this->applyUserInput($userInput, $loaded) && $this->save($loaded))
-            return array(201, $loaded);
+            return array(303, $loaded, array('Location' => $loaded->createUrl()));
         else
             return array(400, $loaded);
     }

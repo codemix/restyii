@@ -1,6 +1,8 @@
 # Restyii
 
-A RESTful HATEOAS compliant extension for Yii. Allows your application to serve and accept json, jsonp, xml, csv or html using the same code.
+A RESTful [HATEOAS](http://en.wikipedia.org/wiki/HATEOAS) compliant extension for Yii.
+Allows your application to serve and accept JSON, JSONP, XML, CSV or HTML using the same code.
+The JSON and XML variants are based on the [HAL](http://stateless.co/hal_specification.html) media type.
 
 
 ## WARNING: Pre-alpha software, use at your own risk.
@@ -64,6 +66,10 @@ Example Restyii client application config
         'application.resources.*',
       ),
       'components' => array(
+            'api' => array(
+                'class' => 'Restyii\\Client\\Connection',
+                'baseUrl' => 'http://yourapihostname/',
+            ),
             ...
       ),
     );

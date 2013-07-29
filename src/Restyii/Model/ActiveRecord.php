@@ -16,6 +16,11 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     protected $_oldAttributes = array();
 
     /**
+     * @var bool whether or not this model has been deleted
+     */
+    protected $_isDeleted = false;
+
+    /**
      * Returns the name to use for this particular resource instance.
      * The result of this function will be used as default anchor text when
      * creating links to resource instances.
@@ -258,43 +263,43 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $htmlOptions = array();
         switch ($format) {
             case 'number';
-                $inputType = 'numberField';
+                $inputType = 'number';
                 break;
             case 'boolean';
                 $inputType = 'checkbox';
                 break;
             case 'choice';
-                $inputType = 'radioButtonList';
+                $inputType = 'radiolist';
                 $methodName = $attribute.'Labels';
                 if (method_exists($this, $methodName))
                     $htmlOptions['items'] = $this->{$methodName}();
                 break;
             case 'date';
-                $inputType = 'dateField';
+                $inputType = 'date';
                 break;
             case 'datetime';
-                $inputType = 'datetimeField';
+                $inputType = 'datetime';
                 break;
             case 'time';
-                $inputType = 'timeField';
+                $inputType = 'time';
                 break;
             case 'text';
-                $inputType = 'textField';
+                $inputType = 'text';
                 break;
             case 'password';
-                $inputType = 'passwordField';
+                $inputType = 'password';
                 break;
             case 'email';
-                $inputType = 'emailField';
+                $inputType = 'email';
                 break;
             case 'phone';
-                $inputType = 'telField';
+                $inputType = 'tel';
                 break;
             case 'ntext';
-                $inputType = 'textArea';
+                $inputType = 'textarea';
                 break;
             default;
-                $inputType = 'textField';
+                $inputType = 'text';
         }
         foreach($this->getValidators($attribute) as $validator) {
             if ($validator instanceof \CStringValidator) {
@@ -386,6 +391,23 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
+     * Sets whether the model has been deleted
+     * @param boolean $isDeleted
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->_isDeleted = $isDeleted;
+    }
+
+    /**
+     * @return boolean true if the model has been deleted
+     */
+    public function getIsDeleted()
+    {
+        return $this->_isDeleted;
+    }
+
+    /**
      * @inheritDoc
      */
     protected function afterFind()
@@ -403,7 +425,14 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $this->_oldAttributes = $this->getAttributes();
     }
 
-
+    /**
+     * @inheritDoc
+     */
+    protected function afterDelete()
+    {
+        parent::afterDelete();
+        $this->_isDeleted = true;
+    }
     /**
      * Returns the difference between the old attributes and the new attributes
      * of the owner model.
