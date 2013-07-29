@@ -81,18 +81,23 @@ class Options extends Base
     protected function performItem($actions, ActiveRecord $model, $pk)
     {
         $model->setScenario('read');
+        $itemActions = array();
+        $collectionActions = array();
         foreach($actions as $name => $action) {
             if ($action instanceof MultipleTargetInterface)
-                unset($actions[$name]);
+                $collectionActions[$name] = $this->prepareAction($action);
+            else if ($action instanceof SingleTargetInterface)
+                $itemActions[$name] = $this->prepareAction($action);
             else
-                $actions[$name] = $this->prepareAction($action);
+                unset($actions[$name]);
         }
         $attributes = $this->getAttributeConfigs($model);
         return array(200, array(
             'label' => $model->classLabel(),
             'collectionLabel' => $model->classLabel(true),
             'attributes' => $attributes,
-            'actions' => $actions
+            'itemActions' => $itemActions,
+            'collectionActions' => $collectionActions,
         ));
     }
 
@@ -177,6 +182,11 @@ class Options extends Base
             'verb' => $action->verb,
             'params' => $action->params(),
             'headers' => $action->requestHeaders(),
+            'link' => array(
+                'href' => $action->createUrlTemplate(),
+                'templated' => true,
+                'title' => $action->label(),
+            ),
         );
     }
 }
