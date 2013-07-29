@@ -62,8 +62,9 @@ class HTML extends Base
         $request = $response->getRequest();
         $controller = $request->getAction()->getController();
 
-        /*$params = array(
-            'response' => $this
+        $params = array(
+            'response' => $this,
+            'format' => \Yii::app()->getComponent('format'),
         );
         if ($response->data instanceof \CModel)
             $params['model'] = $response->data;
@@ -73,9 +74,8 @@ class HTML extends Base
             $params['error'] = $response->data;
         else
             $params['data'] = $response->data;
-        */
 
-        $params = $this->prepare($response->data);
+        #$params = $this->prepare($response->data);
         if ($request->getIsAjaxRequest())
             return $controller->renderPartial($response->getViewName(), $params, true);
         else
