@@ -40,6 +40,18 @@ class ActiveDataProvider extends \CActiveDataProvider implements DataProviderInt
     }
 
     /**
+     * Get a given parameter
+     * @param string $name the parameter name
+     * @param mixed|null $defaultValue the default value to return
+     *
+     * @return mixed the parameter value or the default value
+     */
+    public function getParam($name, $defaultValue = null)
+    {
+        return empty($this->_params[$name]) ? $defaultValue : $this->_params[$name];
+    }
+
+    /**
      * Gets the appropriate links for the data provider.
      *
      * @return array the appropriate links for the data provider

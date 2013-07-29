@@ -13,11 +13,6 @@ class Delete extends Base implements \Restyii\Action\SingleTargetInterface
     public $verb = "DELETE";
 
     /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
-
-    /**
      * @inheritDoc
      */
     public function label()
@@ -53,7 +48,7 @@ class Delete extends Base implements \Restyii\Action\SingleTargetInterface
         if ($loaded === null)
             $loaded = $this->load();
         if ($this->delete($loaded))
-            return array(204, $loaded);
+            return array(200, $loaded);
         else if ($loaded->hasErrors())
             return array(405, $loaded);
         else

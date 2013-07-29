@@ -13,11 +13,6 @@ class Update extends Base implements \Restyii\Action\SingleTargetInterface
     public $verb = "POST";
 
     /**
-     * @var \Restyii\CacheHelper\Base|bool the action cache
-     */
-    protected $_cache = false;
-
-    /**
      * @inheritDoc
      */
     public function label()
@@ -52,7 +47,7 @@ class Update extends Base implements \Restyii\Action\SingleTargetInterface
         if ($loaded === null)
             $loaded = $this->load();
         if ($this->applyUserInput($userInput, $loaded) && $this->save($loaded))
-            return array(200, $loaded);
+            return array(303, $loaded, array('Location' => $loaded->createUrl()));
         else
             return array(400, $loaded);
     }
