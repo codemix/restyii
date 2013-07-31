@@ -338,15 +338,4 @@ class Request extends \CHttpRequest
         }
         return $this->_userInput;
     }
-
-
-    /**
-     * @inheritDoc
-     */
-    protected function normalizeRequest()
-    {
-        parent::normalizeRequest();
-        #\Yii::app()->attachEventHandler('onBeginRequest',array($this,'validateCsrfToken'));
-    }
-
 }
