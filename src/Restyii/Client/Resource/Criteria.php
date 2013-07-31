@@ -117,7 +117,7 @@ class Criteria extends \CComponent
             if ($this->scopes === array())
                 $this->scopes = $criteria->scopes;
             else
-                $this->scopes = \CMap::mergeArray($this->scopes, $criteria->scopes);
+                $this->scopes = $this->mergeItems($this->scopes, $criteria->scopes);
         }
 
         if ($criteria->limit !== null)
@@ -131,11 +131,45 @@ class Criteria extends \CComponent
                 if (!is_array($this->embed))
                     $this->embed = preg_split("/\s*,\s*/",$this->embed);
                 if (is_array($criteria->embed))
-                    $this->embed = array_merge($this->embed, $criteria->embed);
+                    $this->embed = $this->mergeItems($this->embed, $criteria->embed);
                 else
                     $this->embed[] = $criteria->embed;
             }
         }
         return $this;
+    }
+
+    /**
+     * Merge one or more arrays into the given target array
+     *
+     * @param array $target the target array
+     * @param array $source,... the sources to merge into the target
+     *
+     * @return array the merged target
+     */
+    protected function mergeItems($target, $source)
+    {
+        $sources = func_get_args();
+        array_shift($sources);
+
+        foreach($sources as $source) {
+            foreach($source as $key => $value) {
+                if (is_numeric($key)) {
+                    if (!in_array($value, $target))
+                        $target[] = $value;
+                }
+                else if (isset($target[$key])) {
+                    if (!is_array($target[$key]))
+                        $target[$key] = array($target[$key]);
+                    if (!is_array($value))
+                        $value = array($value);
+                    $target[$key] = $this->mergeItems($target[$key], $value);
+                }
+                else
+                    $target[$key] = $value;
+            }
+        }
+
+        return $target;
     }
 }
