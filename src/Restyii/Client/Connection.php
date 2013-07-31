@@ -5,6 +5,7 @@ namespace Restyii\Client;
 
 
 use Guzzle\Http\Client;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Restyii\Client\Schema\Schema;
 
 class Connection extends \CApplicationComponent
@@ -14,6 +15,7 @@ class Connection extends \CApplicationComponent
      */
     public $defaultHeaders = array(
         'Accept' => 'application/json',
+        'Content-Type' => 'application/x-www-form-urlencoded',
     );
 
     /**
@@ -106,18 +108,20 @@ class Connection extends \CApplicationComponent
     public function getGuzzle()
     {
         if ($this->_guzzle === null)
-            $this->_guzzle = new Client($this->getBaseUrl());
+            $this->_guzzle = new Client($this->getBaseUrl(), array('redirect.disable' => true));
         return $this->_guzzle;
     }
 
     /**
      * Performs a request
+     *
      * @param string $verb the http verb, e.g. 'GET' or 'POST'
      * @param string|array $url the url to request, can be a relative url or a Yii URL-route-like array, where the
      * first element is the url and subsequent elements are get parameters, e.g. array('user', 'id' => 123)
      * @param array|null $data the data to send
      * @param array|null $headers the headers to send
      *
+     * @throws \Exception|\Guzzle\Http\Exception\HttpException if the request is invalid
      * @return mixed the decoded response
      */
     public function request($verb, $url, $data = null, $headers = null)
@@ -126,9 +130,18 @@ class Connection extends \CApplicationComponent
             $headers = \CMap::mergeArray($this->defaultHeaders, $headers);
         else
             $headers = $this->defaultHeaders;
-        $request = $this->createRequest($verb, $url, $headers, $data);
-        $result = $request->send();
-        return json_decode($result->getBody(true), true);
+        $request = $this->createRequest($verb, $url, $data, $headers);
+        try {
+            $result = $request->send();
+            $decoded = json_decode($result->getBody(true), true);
+        }
+        catch (ClientErrorResponseException $e) {
+            $result = $e->getResponse()->getBody(true);
+            $decoded = json_decode($result, true);
+            if ($decoded === null)
+                throw $e;
+        }
+        return $decoded;
     }
 
     /**
