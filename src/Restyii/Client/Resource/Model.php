@@ -122,9 +122,9 @@ class Model extends \CModel
                 $required[] = $name;
             }
             if ($attribute->isWritable) {
-                if (!isset($types[$attribute->type]))
-                    $types[$attribute->type] = array();
-                $types[$attribute->type][] = $name;
+                if (!isset($types[$attribute->primitive]))
+                    $types[$attribute->primitive] = array();
+                $types[$attribute->primitive][] = $name;
             }
         }
 
@@ -520,11 +520,17 @@ class Model extends \CModel
 
     /**
      * Gets the schema for this resource model
+     * @throws \CException if the schema cannot be found
      * @return \Restyii\Client\Schema\Resource the resource schema
      */
     public function getResourceSchema()
     {
-        return $this->getApiConnection()->getSchema()->itemAt($this->resourceName());
+        $name = $this->resourceName();
+        $schema = $this->getApiConnection()->getSchema()->itemAt($name);
+
+        if (!is_object($schema))
+            throw new \CException(get_class($this).' expects a resource called '.$name);
+        return $schema;
     }
 
     /**
@@ -1016,7 +1022,6 @@ class Model extends \CModel
         }
         else
             $url = $this->getLink('self')->href;
-
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
     }
@@ -1069,6 +1074,10 @@ class Model extends \CModel
             $result = $this->performCollectionAction('create', null, $this->getAttributes($attributes));
             if($result)
             {
+                if (isset($result['_errors'])) {
+                    $this->addErrors($result['_errors']);
+                    return false;
+                }
                 $schema = $this->getResourceSchema();
                 $primaryKey=$schema->primaryKey;
                 if(is_string($primaryKey) && $this->$primaryKey===null)
@@ -1112,7 +1121,11 @@ class Model extends \CModel
             \Yii::trace(get_class($this).'.update()','restyiiclient.resource.model');
             if($this->_pk===null)
                 $this->_pk=$this->getPrimaryKey();
-            $this->performAction('update', null,$this->getAttributes($attributes));
+            $result = $this->performAction('update', null, $this->getAttributes($attributes));
+            if (isset($result['_errors'])) {
+                $this->addErrors($result['_errors']);
+                return false;
+            }
             $this->_pk=$this->getPrimaryKey();
             $this->afterSave();
             return true;
@@ -1476,12 +1489,17 @@ class Model extends \CModel
                 $record->setLinks($attributes['_links']);
                 unset($attributes['_links']);
             }
-            $record->setLinked($attributes);
+            if (isset($attributes['_errors'])) {
+                $record->addErrors($attributes['_errors']);
+                unset($attributes['_errors']);
+            }
+            if (isset($attributes['_embedded'])) {
+                $record->setLinked($attributes);
+                unset($attributes['_embedded']);
+            }
             foreach($attributes as $name=>$value)
             {
-                if ($name === '_embedded')
-                    continue;
-                else if(property_exists($record,$name))
+                if(property_exists($record,$name))
                     $record->$name=$value;
                 else if($schema->hasAttribute($name))
                     $record->_attributes[$name]=$value;

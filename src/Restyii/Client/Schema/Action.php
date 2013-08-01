@@ -33,6 +33,11 @@ class Action extends AbstractEntity
     public $verb;
 
     /**
+     * @var array the action link data
+     */
+    public $link;
+
+    /**
      * @var Header[] the action headers
      */
     protected $_headers;

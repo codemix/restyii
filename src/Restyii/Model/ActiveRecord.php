@@ -65,7 +65,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     /**
      * Returns the links to other related resources.
      *
-     * @return array the links for this resource, name => array("href" => "...", "label" => ",,"), ...
+     * @return array the links for this resource, name => array("href" => "...", "title" => ",,"), ...
      */
     public function links()
     {
@@ -388,6 +388,54 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     public function getOldAttributes()
     {
         return $this->_oldAttributes;
+    }
+
+    /**
+     * Casts a value for the given attribute name
+     *
+     * @param string $name the name of the attribute to retrieve the type for
+     * @param mixed $value the value to cast
+     *
+     * @return mixed the typecast value
+     */
+    public function castAttribute($name, $value)
+    {
+        return $this->castValue($this->getAttributePrimitive($name), $value);
+
+    }
+
+    /**
+     * Cast a given value to the given type.
+     *
+     * @param string $type the php type, e.g. 'string'
+     * @param mixed $value the value to cast
+     * @param bool $allowNull if null should be returned for empty values
+     *
+     * @return mixed the typecast value
+     */
+    public function castValue($type, $value, $allowNull = true)
+    {
+        if ($allowNull && ($value === '' || $value === null))
+            return null;
+        settype($value, $type);
+        return $value;
+    }
+
+
+    /**
+     * Sets the attribute value.
+     *
+     * @param string $name the attribute name
+     * @param mixed $value the attribute value
+     * @param bool $cast whether to cast the value to the appropriate type, defaults to true
+     *
+     * @return boolean whether the attribute exists and the assignment is conducted successfully
+     */
+    public function setAttribute($name, $value, $cast = true)
+    {
+        if ($cast)
+            $value = $this->castAttribute($name, $value);
+        return parent::setAttribute($name, $value);
     }
 
     /**
