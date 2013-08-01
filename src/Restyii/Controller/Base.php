@@ -22,6 +22,34 @@ class Base extends \CController
     protected $_collectiveLabel;
 
     /**
+     * @var string the page description
+     */
+    protected $_pageDescription;
+
+    /**
+     * Sets the description for the page
+     * @param string $pageDescription
+     */
+    public function setPageDescription($pageDescription)
+    {
+        $this->_pageDescription = $pageDescription;
+    }
+
+    /**
+     * Gets the description for the page
+     * @return string the page description
+     */
+    public function getPageDescription()
+    {
+        if ($this->_pageDescription === null) {
+            $action = $this->getAction();
+            if (method_exists($action, 'label')) /* @var \Restyii\Action\Base $action */
+                $this->_pageDescription = $action->label();
+        }
+        return $this->_pageDescription;
+    }
+
+    /**
      * Respond to a request
      *
      * @param int $code the http response code
