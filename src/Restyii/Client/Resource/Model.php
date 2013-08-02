@@ -1039,7 +1039,7 @@ class Model extends \CModel
     public function performCollectionAction($actionName,  $params = null, $data = null, $headers = null)
     {
         $schema = $this->getResourceSchema();
-        $action = $schema->getCollectionActions()->itemAt($actionName); /* @var \Restyii\Client\Schema\Action $action */
+        $action = $schema->getItemActions()->itemAt($actionName); /* @var \Restyii\Client\Schema\Action $action */
         if ($params !== null) {
             array_unshift($params, $this->resourceName());
             $url = $params;
