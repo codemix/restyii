@@ -11,10 +11,10 @@ abstract class Root extends Base
     {
         return array(
             'index' => array(
-                'class' => 'Restyii\Action\Root\Index',
+                'class' => 'Restyii\\Action\\Root\\Index',
             ),
-            'guzzle' => array(
-                'class' => 'Restyii\Action\Root\Guzzle',
+            'error' => array(
+                'class' => 'Restyii\\Action\\Root\\Error',
             )
         );
     }
