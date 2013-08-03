@@ -2,6 +2,7 @@
 
 namespace Restyii\Controller;
 
+use Restyii\Utils\String;
 use \Restyii\Web\Response;
 
 class Base extends \CController
@@ -11,15 +12,28 @@ class Base extends \CController
      */
     public $layout = "/layouts/main";
 
-    /**
-     * @var string the label for this type of resource
-     */
-    protected $_label;
 
     /**
-     * @var string the collective label for this type of resource
+     * Return a label for the controller
+     * @param bool $plural true if the plural form should be returned
+     *
+     * @return string the label
      */
-    protected $_collectiveLabel;
+    public function classLabel($plural = false)
+    {
+        $humanized = String::humanize(substr(get_class($this), 0, -10));
+        return $plural ? String::pluralize($humanized) : $humanized;
+    }
+
+    /**
+     * Returns a description of the controller
+     *
+     * @return string the description
+     */
+    public function classDescription()
+    {
+        return null;
+    }
 
     /**
      * Respond to a request
