@@ -47,7 +47,12 @@ Example Restyii server application config
           ),
       ),
       'components' => array(
-            ...
+            'urlManager' => array(
+                'rules' => array(
+                    '' => array('/default/index'),
+                    array('class' => 'Restyii\\Web\\UrlRule'),
+                 ),
+            ),
       ),
     );
 
