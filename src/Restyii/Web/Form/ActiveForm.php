@@ -129,6 +129,54 @@ class ActiveForm extends \CActiveForm
     /**
      * @inheritDoc
      */
+    public function dateTimeField($model, $attribute, $htmlOptions = array())
+    {
+        if (!isset($htmlOptions['name']))
+            $htmlOptions['name'] = $attribute;
+        if (!isset($htmlOptions['itemprop']))
+            $htmlOptions['itemprop'] = $attribute;
+        return parent::dateTimeField($model, $attribute, $htmlOptions);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function dateTimeLocalField($model, $attribute, $htmlOptions = array())
+    {
+        if (!isset($htmlOptions['name']))
+            $htmlOptions['name'] = $attribute;
+        if (!isset($htmlOptions['itemprop']))
+            $htmlOptions['itemprop'] = $attribute;
+        return parent::dateTimeLocalField($model, $attribute, $htmlOptions);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function weekField($model, $attribute, $htmlOptions = array())
+    {
+        if (!isset($htmlOptions['name']))
+            $htmlOptions['name'] = $attribute;
+        if (!isset($htmlOptions['itemprop']))
+            $htmlOptions['itemprop'] = $attribute;
+        return parent::weekField($model, $attribute, $htmlOptions);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function colorField($model, $attribute, $htmlOptions = array())
+    {
+        if (!isset($htmlOptions['name']))
+            $htmlOptions['name'] = $attribute;
+        if (!isset($htmlOptions['itemprop']))
+            $htmlOptions['itemprop'] = $attribute;
+        return parent::colorField($model, $attribute, $htmlOptions);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function telField($model, $attribute, $htmlOptions = array())
     {
         if (!isset($htmlOptions['name']))
