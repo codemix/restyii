@@ -2,6 +2,8 @@
 
 namespace Restyii\Action\Root;
 
+use Restyii\Utils\String;
+
 class Index extends Base
 {
     /**
@@ -57,17 +59,49 @@ class Index extends Base
         if (!$module)
             $module = $app;
 
-        $controllers = $app->getSchema()->getControllerInstances($module);
         $data = array(
             'name' => $module->name,
-            '_links' => array(),
+            'description' => $module->getDescription(),
+            '_links' => $this->createLinks(),
         );
-        foreach($controllers as $id => $controller) {
-            $data['_links'][$id] = array(
-                'href' => $controller->createUrl('search'), # $app->createUrl($baseRoute.$id.'/search'),
-            );
-        }
         return array(200, $data);
     }
 
+    /**
+     * Create the links for resources in the resource root
+     * @return array the links, name => config
+     */
+    protected function createLinks()
+    {
+        $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
+
+        $controller = $this->getController();
+        $module = $controller->getModule();
+        if (!$module)
+            $module = $app;
+
+        $controllers = $app->getSchema()->getControllerInstances($module); /* @var \Restyii\Controller\Base[]|\CController[] $controllers */
+
+        $links = array(
+            'self' => array(
+                'title' => $module->name,
+                'href' => trim($app->getBaseUrl(), '/').'/',
+            ),
+        );
+        foreach($controllers as $id => $controller) {
+            if ($id === $module->defaultController)
+                continue;
+
+           $links[$id] = array(
+                'title' =>  method_exists($controller, 'classLabel') ? $controller->classLabel(true) : String::pluralize(String::humanize(substr(get_class($controller), 0, -10))),
+                'href' => $controller->createUrl('search'),
+            );
+            if (method_exists($controller, 'classDescription'))
+               $links[$id]['description'] = $controller->classDescription();
+            if (isset($controller->modelClass))
+               $links[$id]['profile'] = array($controller->modelClass);
+        }
+
+        return $links;
+    }
 }

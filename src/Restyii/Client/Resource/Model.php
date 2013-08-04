@@ -1071,7 +1071,7 @@ class Model extends \CModel
         if($this->beforeSave())
         {
             \Yii::trace(get_class($this).'.insert()','restyiiclient.resource.model');
-            $result = $this->performCollectionAction('create', null, $this->getAttributes($attributes));
+            $result = $this->performAction('create', null, $this->getAttributes($attributes));
             if($result)
             {
                 if (isset($result['_errors'])) {
