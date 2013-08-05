@@ -99,6 +99,9 @@ class Model extends Base
             'copy' => array(
                 'class' => 'Restyii\Action\Item\Copy',
             ),
+            'stats' => array(
+                'class' => 'Restyii\Action\Item\Stats',
+            ),
 
             // the following actions operate on relations
 

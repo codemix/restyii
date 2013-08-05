@@ -103,5 +103,9 @@ interface ModelInterface
      */
     public function search();
 
-
+    /**
+     * Return an array of statistics for the resource model instance.
+     * @return array the stats for the model
+     */
+    public function stats();
 }

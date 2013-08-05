@@ -33,6 +33,9 @@ class Copy extends Base implements \Restyii\Action\SingleTargetInterface
         ));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function requestHeaders()
     {
         return array(
