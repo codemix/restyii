@@ -570,4 +570,15 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             )
         ));
     }
+
+    /**
+     * Return an array of statistics for the resource model instance.
+     * @return array the stats for the model
+     */
+    public function stats()
+    {
+        return array();
+    }
+
+
 }

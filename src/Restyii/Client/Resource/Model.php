@@ -373,7 +373,10 @@ class Model extends \CModel
      */
     protected function addLinkedResource(Link $link, $resource)
     {
-        if (is_array($link->profile)) {
+        if ($link->profile === null) {
+            $this->_linked[$link->name] = $resource;
+        }
+        else if (is_array($link->profile)) {
             // this is a list of resources
             foreach($link->profile as $className) {
                 $model = self::model($className);

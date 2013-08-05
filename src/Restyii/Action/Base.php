@@ -304,7 +304,8 @@ abstract class Base extends \CAction
             foreach($embedNames as $name) {
                 if (!isset($links[$name]))
                     throw new \CHttpException(400, \Yii::t('resource', "Invalid request, unknown {name} parameter.", array('{name}' => $name)));
-                $criteria->with[] = $name;
+                if ($name != 'stats')
+                    $criteria->with[] = $name;
             }
             if (count($embedNames))
                 $criteria->together = true;
