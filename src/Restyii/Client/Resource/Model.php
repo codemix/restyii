@@ -614,24 +614,36 @@ class Model extends \CModel
      * The attribute formats
      * @return array attribute => format
      */
-    public function attributeFormat()
+    public function attributeFormats()
     {
-        $descriptions = array();
+        $formats = array();
         foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /* @var \Restyii\Client\Schema\Attribute $attribute */)
-            $descriptions[$name] = $attribute->format;
-        return $descriptions;
+            $formats[$name] = $attribute->format;
+        return $formats;
+    }
+
+    /**
+     * The attribute inputs
+     * @return array attribute => array(inputType, config)
+     */
+    public function attributeInputs()
+    {
+        $inputs = array();
+        foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /* @var \Restyii\Client\Schema\Attribute $attribute */)
+            $inputs[$name] = $attribute->input;
+        return $inputs;
     }
 
     /**
      * The attribute primitive types
      * @return array attribute => primitive type
      */
-    public function attributePrimitive()
+    public function attributePrimitives()
     {
-        $descriptions = array();
+        $primitives = array();
         foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /* @var \Restyii\Client\Schema\Attribute $attribute */)
-            $descriptions[$name] = $attribute->primitive;
-        return $descriptions;
+            $primitives[$name] = $attribute->primitive;
+        return $primitives;
     }
 
     /**
@@ -640,10 +652,10 @@ class Model extends \CModel
      */
     public function attributeTypes()
     {
-        $descriptions = array();
+        $types = array();
         foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /* @var \Restyii\Client\Schema\Attribute $attribute */)
-            $descriptions[$name] = $attribute->type;
-        return $descriptions;
+            $types[$name] = $attribute->type;
+        return $types;
     }
 
     /**
@@ -690,13 +702,18 @@ class Model extends \CModel
     /**
      * Sets the named attribute value.
      * You may also use $this->AttributeName to set the attribute value.
+     *
      * @param string $name the attribute name
      * @param mixed $value the attribute value.
+     * @param bool $cast whether to cast the value to the appropriate type, defaults to true
+     *
      * @return boolean whether the attribute exists and the assignment is conducted successfully
      * @see hasAttribute
      */
-    public function setAttribute($name,$value)
+    public function setAttribute($name, $value, $cast = true)
     {
+        if ($cast)
+            $value = $this->castAttribute($name, $value);
         if(property_exists($this,$name))
             $this->$name=$value;
         elseif($this->getResourceSchema()->hasAttribute($name))
@@ -705,7 +722,189 @@ class Model extends \CModel
             return false;
         return true;
     }
+    /**
+     * Gets the appropriate type for a given attribute
+     * @param string $attribute the name of the attribute
+     *
+     * @return string the attribute type, e.g. 'string' or 'integer'
+     */
+    public function getAttributeType($attribute)
+    {
+        $types = $this->attributeTypes();
+        if (isset($types[$attribute]))
+            return $types[$attribute];
+        else
+            return "string";
+    }
 
+    /**
+     * Gets the appropriate primitive type for a given attribute
+     * @param string $attribute the name of the attribute
+     *
+     * @return string the attribute type, e.g. 'string' or 'integer'
+     */
+    public function getAttributePrimitive($attribute)
+    {
+        $primitives = $this->attributePrimitives();
+        if (isset($primitives[$attribute]))
+            return $primitives[$attribute];
+        $type = $this->getAttributeType($attribute);
+        switch($type) {
+            case 'integer';
+            case 'float';
+            case 'boolean';
+            case 'string';
+                return $type;
+            default;
+                return 'string';
+        }
+
+    }
+
+    /**
+     * Gets the name of the format for the given attribute.
+     * @param string $attribute the attribute to get the format for
+     *
+     * @return string the attribute format
+     */
+    public function getAttributeFormat($attribute)
+    {
+        $formats = $this->attributeFormats();
+        if (isset($formats[$attribute]))
+            return $formats[$attribute];
+        $type = $this->getAttributeType($attribute);
+        switch ($type) {
+            case 'float';
+            case 'integer';
+                return 'number';
+            case 'boolean';
+                return 'boolean';
+            case 'enum';
+                return 'choice';
+            case 'date';
+                return 'date';
+            case 'datetime';
+                return 'datetime';
+            case 'time';
+                return 'time';
+            case 'string';
+                if (stristr($attribute, 'password'))
+                    return 'password';
+                elseif (stristr($attribute, 'email'))
+                    return 'email';
+                elseif (stristr($attribute, 'phone'))
+                    return 'phone';
+                elseif (stristr($attribute, 'phone'))
+                    return 'phone';
+                else
+                    return 'text';
+                break;
+            default;
+                return 'text';
+        }
+    }
+
+    /**
+     * Gets the input field configuration for the given attribute.
+     * @param string $attribute the attribute to get the input config for
+     *
+     * @return array an array containing the name of the input type,
+     * optionally followed by the input type configuration array.
+     */
+    public function getAttributeInput($attribute)
+    {
+        $inputs = $this->attributeInputs();
+        if (isset($inputs[$attribute]))
+            return $inputs[$attribute];
+        $format = $this->getAttributeFormat($attribute);
+        $htmlOptions = array();
+        switch ($format) {
+            case 'number';
+                $inputType = 'number';
+                break;
+            case 'boolean';
+                $inputType = 'checkbox';
+                break;
+            case 'choice';
+                $inputType = 'radiolist';
+                $methodName = $attribute.'Labels';
+                if (method_exists($this, $methodName))
+                    $htmlOptions['items'] = $this->{$methodName}();
+                break;
+            case 'date';
+                $inputType = 'date';
+                break;
+            case 'datetime';
+                $inputType = 'datetime';
+                break;
+            case 'time';
+                $inputType = 'time';
+                break;
+            case 'text';
+                $inputType = 'text';
+                break;
+            case 'password';
+                $inputType = 'password';
+                break;
+            case 'email';
+                $inputType = 'email';
+                break;
+            case 'phone';
+                $inputType = 'tel';
+                break;
+            case 'ntext';
+                $inputType = 'textarea';
+                break;
+            default;
+                $inputType = 'text';
+        }
+        foreach($this->getValidators($attribute) as $validator) {
+            if ($validator instanceof \CStringValidator) {
+                if (!empty($validator->max))
+                    $input['maxlength'] = $validator->max;
+            }
+            else if ($validator instanceof \CNumberValidator) {
+                if ($validator->min !== null)
+                    $input['min'] = $validator->min;
+                if ($validator->max !== null)
+                    $input['max'] = $validator->max;
+            }
+        }
+        if (count($htmlOptions))
+            return array($inputType, $htmlOptions);
+        else
+            return array($inputType);
+    }
+    /**
+     * Casts a value for the given attribute name
+     *
+     * @param string $name the name of the attribute to retrieve the type for
+     * @param mixed $value the value to cast
+     *
+     * @return mixed the typecast value
+     */
+    public function castAttribute($name, $value)
+    {
+        return $this->castValue($this->getAttributePrimitive($name), $value);
+
+    }
+
+    /**
+     * Cast a given value to the given type.
+     *
+     * @param string $type the php type, e.g. 'string'
+     * @param mixed $value the value to cast
+     * @param bool $allowNull if null should be returned for empty values
+     *
+     * @return mixed the typecast value
+     */
+    public function castValue($type, $value, $allowNull = true)
+    {
+        if ($allowNull && ($value === '' || $value === null))
+            return null;
+        settype($value, $type);
+        return $value;
+    }
 
     /**
      * Returns all column attribute values.
