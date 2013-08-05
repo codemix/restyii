@@ -3,6 +3,8 @@
 namespace Restyii\Controller;
 
 
+use Restyii\Utils\String;
+
 class Model extends Base
 {
     /**
@@ -28,6 +30,39 @@ class Model extends Base
         if ($this->_modelClass === null)
             $this->_modelClass = substr(get_class($this),0, -10);
         return $this->_modelClass;
+    }
+
+    /**
+     * Return the appropriate static model instance for this controller
+     *
+     * @return \Restyii\Model\ActiveRecord $model the model instance
+     */
+    public function staticModel()
+    {
+        $modelClass = $this->getModelClass();
+        return $modelClass::model();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function classLabel($plural = false)
+    {
+        return $this->staticModel()->classLabel($plural);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function classDescription()
+    {
+        return \Yii::t(
+            'resource',
+            "Performs actions on {pluralLabel}.",
+            array(
+                '{pluralLabel}' => $this->classLabel(true),
+            )
+        );
     }
 
 

@@ -4,6 +4,7 @@ namespace Restyii\Action;
 
 use Restyii\Model\ModelInterface;
 use Restyii\Model\ActiveRecord;
+use Restyii\Utils\String;
 
 
 /**
@@ -102,7 +103,7 @@ abstract class Base extends \CAction
         $model = $this->staticModel();
         return \Yii::t('resource', '{actionName} {collectionLabel}', array(
             '{actionName}' => $model->generateAttributeLabel($this->getId()),
-            '{collectionLabel}' => $model->collectionLabel()
+            '{collectionLabel}' => $model->classLabel(true)
         ));
     }
 
@@ -114,8 +115,8 @@ abstract class Base extends \CAction
     {
         $model = $this->staticModel();
         return \Yii::t('resource', '{pluralActionName} {collectionLabel}', array(
-            '{pluralActionName}' => $model->pluralize($model->generateAttributeLabel($this->getId())),
-            '{collectionLabel}' => $model->collectionLabel()
+            '{pluralActionName}' => String::pluralize($model->generateAttributeLabel($this->getId())),
+            '{collectionLabel}' => $model->classLabel(true)
         ));
     }
 
