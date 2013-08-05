@@ -774,20 +774,20 @@ class Model extends \CModel
             return $formats[$attribute];
         $type = $this->getAttributeType($attribute);
         switch ($type) {
-            case 'float';
-            case 'integer';
+            case 'float':
+            case 'integer':
                 return 'number';
-            case 'boolean';
+            case 'boolean':
                 return 'boolean';
-            case 'enum';
+            case 'enum':
                 return 'choice';
-            case 'date';
+            case 'date':
                 return 'date';
-            case 'datetime';
+            case 'datetime':
                 return 'datetime';
-            case 'time';
+            case 'time':
                 return 'time';
-            case 'string';
+            case 'string':
                 if (stristr($attribute, 'password'))
                     return 'password';
                 elseif (stristr($attribute, 'email'))
@@ -799,7 +799,7 @@ class Model extends \CModel
                 else
                     return 'text';
                 break;
-            default;
+            default:
                 return 'text';
         }
     }
@@ -819,43 +819,43 @@ class Model extends \CModel
         $format = $this->getAttributeFormat($attribute);
         $htmlOptions = array();
         switch ($format) {
-            case 'number';
+            case 'number':
                 $inputType = 'number';
                 break;
-            case 'boolean';
+            case 'boolean':
                 $inputType = 'checkbox';
                 break;
-            case 'choice';
+            case 'choice':
                 $inputType = 'radiolist';
                 $methodName = $attribute.'Labels';
                 if (method_exists($this, $methodName))
                     $htmlOptions['items'] = $this->{$methodName}();
                 break;
-            case 'date';
+            case 'date':
                 $inputType = 'date';
                 break;
-            case 'datetime';
+            case 'datetime':
                 $inputType = 'datetime';
                 break;
-            case 'time';
+            case 'time':
                 $inputType = 'time';
                 break;
-            case 'text';
+            case 'text':
                 $inputType = 'text';
                 break;
-            case 'password';
+            case 'password':
                 $inputType = 'password';
                 break;
-            case 'email';
+            case 'email':
                 $inputType = 'email';
                 break;
-            case 'phone';
+            case 'phone':
                 $inputType = 'tel';
                 break;
-            case 'ntext';
+            case 'ntext':
                 $inputType = 'textarea';
                 break;
-            default;
+            default:
                 $inputType = 'text';
         }
         foreach($this->getValidators($attribute) as $validator) {
