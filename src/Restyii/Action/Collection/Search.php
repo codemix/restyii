@@ -43,6 +43,12 @@ class Search extends Base implements \Restyii\Action\MultipleTargetInterface
                 'required' => false,
                 'type' => 'string',
             ),
+            'filter' => array(
+                'label' => \Yii::t('resource', 'Filter'),
+                'description' => \Yii::t('resource', 'A list of attributes that will be used to filter results.'),
+                'required' => false,
+                'type' => 'array',
+            ),
             'page' => array(
                 'label' => \Yii::t('resource', 'Page'),
                 'description' => \Yii::t('resource', 'The number of the page'),
