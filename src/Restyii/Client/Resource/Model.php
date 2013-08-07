@@ -118,7 +118,7 @@ class Model extends \CModel
         $types = array();
 
         foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /** @var Attribute $attribute */) {
-            if ($attribute->isRequired) {
+            if ($this->getScenario() == 'create' && $attribute->isRequired) {
                 $required[] = $name;
             }
             if ($attribute->isWritable) {
