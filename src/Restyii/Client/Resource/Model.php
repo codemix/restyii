@@ -1223,7 +1223,7 @@ class Model extends \CModel
             $url = $params;
         }
         else
-            $url = $this->getLink('self')->href;
+            $url = $action->link['href'];
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
     }
