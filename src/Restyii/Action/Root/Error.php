@@ -28,6 +28,18 @@ class Error extends Base
     }
 
     /**
+     * Runs the action
+     */
+    public function run()
+    {
+        $controller = $this->getController();
+        $controller->setPageTitle($this->label());
+        $userInput = $this->getUserInput();
+        $result = $this->perform($userInput);
+        call_user_func_array(array($this, 'respond'), $result);
+    }
+
+    /**
      * Presents the action without performing it.
      * This is used to e.g. show a html form to a user so that they can
      * enter data and *then* perform the action.
