@@ -546,9 +546,9 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     public function search($params = array())
     {
         $criteria = new \CDbCriteria();
+        $alias = $this->getTableAlias(false, false);
         if (!empty($params['q'])) {
             $safeAttributes = $this->getSafeAttributeNames();
-            $alias = $this->getTableAlias(false, false);
             $columns = $this->getTableSchema()->columns;
             foreach($safeAttributes as $attribute) {
                 if (!isset($columns[$attribute]))
@@ -559,6 +559,17 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
                 else
                     $criteria->compare($alias.'.'.$attribute, $params['q'], false, 'OR');
             }
+        }
+        if (!empty($params['filter'])) {
+            $filterCriteria = $this->getCommandBuilder()->createColumnCriteria(
+                $this->getTableSchema(),
+                $params['filter'],
+                '',
+                array(),
+                $alias.'.'
+
+            );
+            $criteria->mergeWith($filterCriteria);
         }
         return new ActiveDataProvider($this, array(
             'criteria' => $criteria,
