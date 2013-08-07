@@ -202,6 +202,16 @@ class Model extends \CModel
      */
     public function __set($name,$value)
     {
+        if(is_array($value)) {
+            foreach($value as $key=>$val)
+                $this->setValue($key,$val);
+        }
+        else
+            $this->setValue($name,$value);
+    }
+
+    private function setValue($name,$value)
+    {
         if($this->setAttribute($name,$value)===false)
         {
             if(isset($this->_links[$name]))
