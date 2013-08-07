@@ -106,8 +106,9 @@ class Schema extends \CAttributeCollection
      */
     protected function fetchResource($name, $refresh = false)
     {
-        if (!$refresh && ($resource = $this->fetchResourceFromCache($name)) !== false)
+        if (!$refresh && ($resource = $this->fetchResourceFromCache($name)) !== false) {
             return $resource;
+        }
         try {
             $config = $this->getConnection()->options($name);
         } catch (HttpException $e) {

@@ -118,7 +118,7 @@ class Model extends \CModel
         $types = array();
 
         foreach($this->getResourceSchema()->getAttributes() as $name => $attribute /** @var Attribute $attribute */) {
-            if ($attribute->isRequired) {
+            if ($this->getScenario() == 'create' && $attribute->isRequired) {
                 $required[] = $name;
             }
             if ($attribute->isWritable) {
@@ -715,12 +715,10 @@ class Model extends \CModel
      */
     public function setAttribute($name, $value, $cast = true)
     {
-        if ($cast)
-            $value = $this->castAttribute($name, $value);
         if(property_exists($this,$name))
-            $this->$name=$value;
+            $this->$name = $cast ? $this->castAttribute($name, $value) : $value;
         elseif($this->getResourceSchema()->hasAttribute($name))
-            $this->_attributes[$name]=$value;
+            $this->_attributes[$name]=$cast ? $this->castAttribute($name, $value) : $value;
         else
             return false;
         return true;
@@ -1218,12 +1216,17 @@ class Model extends \CModel
     {
         $schema = $this->getResourceSchema();
         $action = $schema->getItemActions()->itemAt($actionName); /* @var \Restyii\Client\Schema\Action $action */
+        $link = $this->getLink('self');
+        if ($link === null)
+            $href = $action->link['href'];
+        else
+            $href = $link->href;
         if ($params !== null) {
-            array_unshift($params, $this->getLink('self')->href);
+            array_unshift($params, $href);
             $url = $params;
         }
         else
-            $url = $this->getLink('self')->href;
+            $url = $href;
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
     }
