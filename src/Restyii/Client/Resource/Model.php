@@ -1247,7 +1247,7 @@ class Model extends \CModel
             $url = $params;
         }
         else
-            $url = $this->resourceName();
+            $url = $action->link['href'];
 
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
