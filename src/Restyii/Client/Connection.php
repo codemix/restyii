@@ -5,6 +5,7 @@ namespace Restyii\Client;
 
 
 use Guzzle\Http\Client;
+use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Restyii\Client\Schema\Schema;
 
@@ -140,6 +141,11 @@ class Connection extends \CApplicationComponent
             $decoded = json_decode($result, true);
             if ($decoded === null)
                 throw $e;
+        }
+        catch (BadResponseException $e) {
+            $result = $e->getResponse()->getBody(true);
+            \Yii::log('Restyii Error: '.$result, 'error', 'restyii.client.connection');
+            throw $e;
         }
         return $decoded;
     }
