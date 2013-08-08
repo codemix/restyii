@@ -114,4 +114,21 @@ class Action extends AbstractEntity
         return $this->_params;
     }
 
+    /**
+     * Creates a URL for the action
+     * @param array $tokens the tokens to be replaced within the URL
+     *
+     * @return string|array an array containing the url and any required parameters
+     */
+    public function createUrl($tokens = array())
+    {
+        $href = $this->link['href'];
+        $replacer = function ($match) use ($tokens) {
+            if (isset($tokens[$match[1]]))
+                return $tokens[$match[1]];
+            else
+                return $match[0];
+        };
+        return preg_replace_callback('/\{(\w+)\}/', $replacer, $href);
+    }
 }

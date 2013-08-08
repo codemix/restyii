@@ -1216,17 +1216,14 @@ class Model extends \CModel
     {
         $schema = $this->getResourceSchema();
         $action = $schema->getItemActions()->itemAt($actionName); /* @var \Restyii\Client\Schema\Action $action */
-        $link = $this->getLink('self');
-        if ($link === null)
-            $href = $action->link['href'];
-        else
-            $href = $link->href;
+        $href = $action->createUrl($this->getAttributes());
         if ($params !== null) {
             array_unshift($params, $href);
             $url = $params;
         }
         else
             $url = $href;
+        \Yii::trace('Performing item action: '.$actionName.' ('.(is_string($url) ? $url : json_encode($url)).')', 'restyii.client.resource.model');
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
     }
@@ -1245,13 +1242,15 @@ class Model extends \CModel
     {
         $schema = $this->getResourceSchema();
         $action = $schema->getCollectionActions()->itemAt($actionName); /* @var \Restyii\Client\Schema\Action $action */
+        $href = $action->createUrl($this->getAttributes());
         if ($params !== null) {
-            array_unshift($params, $this->resourceName());
+            array_unshift($params, $href);
             $url = $params;
         }
         else
-            $url = $this->resourceName();
+            $url = $href;
 
+        \Yii::trace('Performing collection action: '.$actionName.' ('.(is_string($url) ? $url : json_encode($url)).')', 'restyii.client.resource.model');
         $api = $this->getApiConnection();
         return $api->request($action->verb, $url, $data, $headers);
     }
@@ -1272,10 +1271,10 @@ class Model extends \CModel
     public function insert($attributes=null)
     {
         if(!$this->getIsNewRecord())
-            throw new \CDbException(\Yii::t('restyiiclient','The resource cannot be inserted to API because it is not new.'));
+            throw new \CDbException(\Yii::t('restyii.client','The resource cannot be inserted to API because it is not new.'));
         if($this->beforeSave())
         {
-            \Yii::trace(get_class($this).'.insert()','restyiiclient.resource.model');
+            \Yii::trace(get_class($this).'.insert()','restyii.client.resource.model');
             $result = $this->performAction('create', null, $this->getAttributes($attributes));
             if($result)
             {
@@ -1320,10 +1319,10 @@ class Model extends \CModel
     public function update($attributes=null)
     {
         if($this->getIsNewRecord())
-            throw new \CDbException(\Yii::t('restyiiclient','The resource cannot be updated because it is new.'));
+            throw new \CDbException(\Yii::t('restyii.client','The resource cannot be updated because it is new.'));
         if($this->beforeSave())
         {
-            \Yii::trace(get_class($this).'.update()','restyiiclient.resource.model');
+            \Yii::trace(get_class($this).'.update()','restyii.client.resource.model');
             if($this->_pk===null)
                 $this->_pk=$this->getPrimaryKey();
             $result = $this->performAction('update', null, $this->getAttributes($attributes));
@@ -1348,7 +1347,7 @@ class Model extends \CModel
     {
         if(!$this->getIsNewRecord())
         {
-            \Yii::trace(get_class($this).'.delete()','restyiiclient.resource.model');
+            \Yii::trace(get_class($this).'.delete()','restyii.client.resource.model');
             if($this->beforeDelete())
             {
                 $this->performAction('delete');
@@ -1368,7 +1367,7 @@ class Model extends \CModel
      */
     public function refresh()
     {
-        \Yii::trace(get_class($this).'.refresh()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.refresh()','restyii.client.resource.model');
         if(($record=$this->findByPk($this->getPrimaryKey()))!==null)
         {
             $this->_attributes=array();
@@ -1572,7 +1571,7 @@ class Model extends \CModel
      */
     public function find($criteria = null)
     {
-        \Yii::trace(get_class($this).'.find()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.find()','restyii.client.resource.model');
         if (!($criteria instanceof Criteria))
             $criteria = new Criteria($criteria);
         return $this->query($criteria);
@@ -1585,7 +1584,7 @@ class Model extends \CModel
      */
     public function findAll($criteria = null)
     {
-        \Yii::trace(get_class($this).'.findAll()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.findAll()','restyii.client.resource.model');
         if (!($criteria instanceof Criteria))
             $criteria = new Criteria($criteria);
         return $this->query($criteria,true);
@@ -1599,7 +1598,7 @@ class Model extends \CModel
      */
     public function findByPk($pk, $criteria = null)
     {
-        \Yii::trace(get_class($this).'.findByPk()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.findByPk()','restyii.client.resource.model');
         if (!($criteria instanceof Criteria))
             $criteria = new Criteria($criteria);
 
@@ -1644,7 +1643,7 @@ class Model extends \CModel
      */
     public function findByAttributes($attributes,$criteria = null)
     {
-        \Yii::trace(get_class($this).'.findByAttributes()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.findByAttributes()','restyii.client.resource.model');
         if (!($criteria instanceof Criteria))
             $criteria = new Criteria($criteria);
         if ($criteria->filter === array())
@@ -1664,7 +1663,7 @@ class Model extends \CModel
      */
     public function findAllByAttributes($attributes,$criteria = null)
     {
-        \Yii::trace(get_class($this).'.findAllByAttributes()','restyiiclient.resource.model');
+        \Yii::trace(get_class($this).'.findAllByAttributes()','restyii.client.resource.model');
         if (!($criteria instanceof Criteria))
             $criteria = new Criteria($criteria);
         if ($criteria->filter === array())
@@ -1672,6 +1671,21 @@ class Model extends \CModel
         else
             $criteria->filter = \CMap::mergeArray($criteria->filter, $attributes);
         return $this->query($criteria,true);
+    }
+
+    /**
+     * Gets the statistics for this model.
+     * @return array the statistics
+     */
+    public function stats()
+    {
+        static $stats;
+        if ($stats === null) {
+            \Yii::trace(get_class($this).'.stats()','restyii.client.resource.model');
+            $result = $this->performAction('stats');
+            $stats = isset($result['stats']) ? $result['stats'] : array();
+        }
+        return $stats;
     }
 
     /**
