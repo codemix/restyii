@@ -355,13 +355,16 @@ class Model extends \CModel
 
     /**
      * Sets (all) the linked resources
-     * @param array $resource the resource data
+     * @param array $embedded the resource data
      */
-    public function setLinked($resource)
+    public function setLinked($embedded)
     {
-        foreach($resource['_embedded'] as $name => $data)
-            if ($data !== null)
-                $this->addLinkedResource($this->getLink($name), $data);
+        foreach($embedded as $name => $data) {
+            $link = $this->getLink($name);
+            if (!$link)
+                continue;
+            $this->addLinkedResource($link, $data);
+        }
 
     }
 
@@ -386,11 +389,13 @@ class Model extends \CModel
                 }
             }
         }
-        else {
+        else if (is_array($resource)) {
             // this is a single resource
             $model = self::model($link->profile);
             $this->_linked[$link->name] = $model->populateRecord($resource);
         }
+        else
+           $this->_linked[$link->name] = $resource;
     }
 
     /**
@@ -414,7 +419,6 @@ class Model extends \CModel
                 $links[$name] = new Link($link);
             $links[$name]->name = $name;
         }
-
         $this->_links = $links;
     }
 
@@ -1713,7 +1717,7 @@ class Model extends \CModel
                 unset($attributes['_errors']);
             }
             if (isset($attributes['_embedded'])) {
-                $record->setLinked($attributes);
+                $record->setLinked($attributes['_embedded']);
                 unset($attributes['_embedded']);
             }
             foreach($attributes as $name=>$value)

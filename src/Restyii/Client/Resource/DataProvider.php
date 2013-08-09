@@ -16,6 +16,13 @@ class DataProvider extends \CDataProvider
      * will return a list of objects of this class.
      */
     public $modelClass;
+
+    /**
+     * @var string the name of key attribute for {@link modelClass}. If not set,
+     * it means the primary key of the corresponding database table will be used.
+     */
+    public $keyAttribute;
+
     /**
      * @var Model the Resource Model finder instance (eg <code>Post::model()</code>).
      * This property can be set by passing the finder instance as the first parameter
