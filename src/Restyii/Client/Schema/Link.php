@@ -27,6 +27,10 @@ class Link extends AbstractEntity
      */
     public $owner;
 
+    /**
+     * @var bool true if this is a templated link
+     */
+    public $templated = false;
 
     /**
      * @var string the link profile. When set this refers to the entity name (by default - model class) that the link is for.
