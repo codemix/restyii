@@ -114,6 +114,20 @@ class Connection extends \CApplicationComponent
     }
 
     /**
+     * This event is raised before a request is sent. The Guzzle request object is available
+     * from the `request` property of the event object.
+     *
+     * @param \Guzzle\Http\Message\RequestInterface
+     */
+    public function onBeforeRequest($request)
+    {
+        $event = new ConnectionEvent;
+        $event->request = $request;
+        $event->sender = $this;
+        $this->raiseEvent('onBeforeRequest',$event);
+    }
+
+    /**
      * Performs a request
      *
      * @param string $verb the http verb, e.g. 'GET' or 'POST'
@@ -131,7 +145,12 @@ class Connection extends \CApplicationComponent
             $headers = \CMap::mergeArray($this->defaultHeaders, $headers);
         else
             $headers = $this->defaultHeaders;
+
         $request = $this->createRequest($verb, $url, $data, $headers);
+
+        if($this->hasEventHandler('onBeforeRequest'))
+            $this->onBeforeRequest($request);
+
         try {
             $result = $request->send();
             $decoded = json_decode($result->getBody(true), true);
