@@ -369,7 +369,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         }
 
         foreach($this->getSafeAttributeNames() as $name) {
-            if (!in_array($name, $attributes))
+            if (!in_array($name, $attributes) && !isset($visibilities[$name]))
                 $attributes[] = $name;
         }
         return $attributes;
