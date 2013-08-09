@@ -115,15 +115,14 @@ class Connection extends \CApplicationComponent
 
     /**
      * This event is raised before a request is sent. The Guzzle request object is available
-     * from the `request` property of the event object.
+     * from the `request` property of the event object. To cancel the event you can set `isValid`
+     * to `false` on the event object. In this case you can supply a custom response value in
+     * the `response` property of the event object.
      *
-     * @param \Guzzle\Http\Message\RequestInterface
+     * @param RequestEvent
      */
-    public function onBeforeRequest($request)
+    public function onBeforeRequest($event)
     {
-        $event = new ConnectionEvent;
-        $event->request = $request;
-        $event->sender = $this;
         $this->raiseEvent('onBeforeRequest',$event);
     }
 
@@ -148,8 +147,14 @@ class Connection extends \CApplicationComponent
 
         $request = $this->createRequest($verb, $url, $data, $headers);
 
-        if($this->hasEventHandler('onBeforeRequest'))
-            $this->onBeforeRequest($request);
+        if($this->hasEventHandler('onBeforeRequest')) {
+            $event = new RequestEvent;
+            $event->request = $request;
+            $event->sender = $this;
+            $this->onBeforeRequest($event);
+            if(!$event->isValid)
+                return $event->response;
+        }
 
         try {
             $result = $request->send();
