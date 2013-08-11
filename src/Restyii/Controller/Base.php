@@ -12,6 +12,10 @@ class Base extends \CController
      */
     public $layout = "/layouts/main";
 
+    /**
+     * @var string the page description
+     */
+    protected $_pageDescription;
 
     /**
      * Return a label for the controller
@@ -34,11 +38,6 @@ class Base extends \CController
     {
         return null;
     }
-
-    /**
-     * @var string the page description
-     */
-    protected $_pageDescription;
 
     /**
      * Sets the description for the page
