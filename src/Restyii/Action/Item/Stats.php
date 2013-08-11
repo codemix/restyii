@@ -47,6 +47,7 @@ class Stats extends Base implements SingleTargetInterface
         if ($loaded === null)
             $loaded = $this->load();
         $data = array(
+            'resource' => $loaded,
             'stats' => $loaded->stats(),
             '_links' => array(
                 'self' => array(
