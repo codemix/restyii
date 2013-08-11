@@ -434,8 +434,12 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      */
     public function setAttribute($name, $value, $cast = true)
     {
-        if ($cast)
-            $value = $this->castAttribute($name, $value);
+        if ($cast) {
+            if(property_exists($this,$name))
+                $value = $this->castAttribute($name, $value);
+            elseif(isset($this->getMetaData()->columns[$name]))
+                $value = $this->castAttribute($name, $value);
+        }
         return parent::setAttribute($name, $value);
     }
 
