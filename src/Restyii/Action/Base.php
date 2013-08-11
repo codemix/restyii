@@ -302,7 +302,11 @@ abstract class Base extends \CAction
             $embedNames = preg_split("/\s*,\s*/", $params['_embed']);
             $links = $finder->links();
             foreach($embedNames as $name) {
-                if (!isset($links[$name]))
+                if (($pos = strpos($name,'.')) !== false)
+                    $first = substr($name, 0, $pos);
+                else
+                    $first = $name;
+                if (!isset($links[$first]))
                     throw new \CHttpException(400, \Yii::t('resource', "Invalid request, unknown {name} parameter.", array('{name}' => $name)));
                 if ($name != 'stats')
                     $criteria->with[] = $name;
@@ -450,7 +454,6 @@ abstract class Base extends \CAction
         $app = \Yii::app();
         $request = $app->getRequest(); /* @var \Restyii\Web\Request $request */
         return $request->getUserInput();
-
     }
 
     /**
