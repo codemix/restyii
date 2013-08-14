@@ -20,6 +20,11 @@ class Application extends \CWebApplication
 {
 
     /**
+     * @var string the name of the default controller for the application.
+     */
+    public $defaultController = "default";
+
+    /**
      * @var string the description of the web application
      */
     protected $_description;
