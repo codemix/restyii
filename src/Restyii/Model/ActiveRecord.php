@@ -376,6 +376,43 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
+     * @param array list of attributes to return. If not provided, all visible attributes will be returned.
+     * @param bool $resolveForeignKeys whether to resolve Fk attributes to the item label of the related model
+     * @return array an array of attributes formatted in their respective format indexed by their name
+     */
+    public function getFormattedAttributes($attributes = array(), $resolveForeignKeys=true)
+    {
+        $values = array();
+
+        if($attributes===array())
+            $attributes = $this->getVisibleAttributeNames();
+
+        foreach($attributes as $name)
+            $values[$name] = $this->getFormattedAttribute($name, $resolveForeignKeys);
+
+        return $values;
+    }
+
+    /**
+     * @param string $name the name of an attribute
+     * @param bool whether to resolve foreign key attributes to the instance label of the related record. Default is true.
+     * @return string the attribute formatted in its corresponding format
+     */
+    public function getFormattedAttribute($name, $resolveForeignKey=true)
+    {
+        if($resolveForeignKey) {
+            $fks = $this->getTableSchema()->foreignKeys;
+            if(isset($fks[$name])) {
+                foreach($this->getMetaData()->relations as $n => $r) {
+                    if(($r instanceof \CBelongsToRelation) && $r->foreignKey===$name && ($related=$this->getRelated($n)))
+                        return $related->instanceLabel();
+                }
+            }
+        }
+        return \Yii::app()->getComponent('format')->attribute($this, $name);
+    }
+
+    /**
      * @param array $oldAttributes
      */
     public function setOldAttributes($oldAttributes)
