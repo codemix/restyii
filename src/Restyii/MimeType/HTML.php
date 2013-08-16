@@ -10,7 +10,7 @@ use \Restyii\Web\Response;
  *
  * @package Restyii\MimeType
  */
-class HTML extends Base
+class HTML extends Form
 {
 
     /**
@@ -27,28 +27,6 @@ class HTML extends Base
         "text/html",
         "application/xhtml+xml",
     );
-
-    /**
-     * @inheritDoc
-     */
-    public function canParse(Request $request)
-    {
-        return false;
-    }
-
-
-    /**
-     * Parse the given input and return either an array of attributes => values
-     * or null if the input could not be parsed.
-     *
-     * @param Request $request the request object
-     *
-     * @return array|null
-     */
-    public function parse(Request $request)
-    {
-        return null;
-    }
 
     /**
      * MimeType the given request response
