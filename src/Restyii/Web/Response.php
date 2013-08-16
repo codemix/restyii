@@ -102,15 +102,24 @@ class Response extends \CComponent
     {
         if ($this->_format === null) {
             $request = $this->getRequest();
-            foreach($request->getAvailableMimeTypes() as $formatter) {
-                if ($formatter->canFormat($this)) {
-                    $this->_format = $formatter;
-                    break;
+            $mimeTypes = $request->getAvailableMimeTypes();
+            if ($request->getFileExtension() != '') {
+                foreach($mimeTypes as $mimeType) {
+                    if ($mimeType->matchFileExtension($request)) {
+                        $this->_format = $mimeType;
+                    }
                 }
             }
-            if ($this->_format === null)
-                $this->_format = $this->getDefaultFormat();
-
+            if ($this->_format === null) {
+                foreach($mimeTypes as $mimeType) {
+                    if ($mimeType->matchAcceptTypes($request)) {
+                        $this->_format = $mimeType;
+                        break;
+                    }
+                }
+                if ($this->_format === null)
+                    $this->_format = $this->getDefaultFormat();
+            }
         }
         return $this->_format;
     }

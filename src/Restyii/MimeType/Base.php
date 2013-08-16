@@ -48,11 +48,41 @@ abstract class Base extends \CComponent
     public function canFormat(Response $response)
     {
         $request = $response->getRequest();
+        if ($this->matchFileExtension($request))
+            return true;
+        else if ($this->matchAcceptTypes($request))
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Predicate that determines whether the requested file extension
+     * matches this mime type.
+     *
+     * @param Request $request the request object to check
+     *
+     * @return bool true if the file extension matches
+     */
+    public function matchFileExtension(Request $request)
+    {
         $fileExtension = $request->getFileExtension();
         foreach($this->fileExtensions as $ext)
             if ($ext == $fileExtension)
                 return true;
+        return false;
+    }
 
+    /**
+     * Predicate that determines whether the requested accept
+     * types match this mime type.
+     *
+     * @param Request $request the request object to check
+     *
+     * @return bool true if the accept header matches
+     */
+    public function matchAcceptTypes(Request $request)
+    {
         $acceptTypes = $request->getPreferredAcceptTypes();
         foreach($acceptTypes as $preferredType) {
             $preferredString = $preferredType['type'];
