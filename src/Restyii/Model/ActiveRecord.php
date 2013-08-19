@@ -453,6 +453,8 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      */
     public function castValue($type, $value, $allowNull = true)
     {
+        if ($value instanceof \CDbExpression)
+            return $value;
         if ($allowNull && ($value === '' || $value === null))
             return null;
         settype($value, $type);
@@ -632,5 +634,14 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         return array();
     }
 
+
+    /**
+     * Return an array of aggregate statistics for the resource model collection.
+     * @return array the stats for the collection
+     */
+    public function aggregate()
+    {
+        return array();
+    }
 
 }

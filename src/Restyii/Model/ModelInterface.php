@@ -108,4 +108,10 @@ interface ModelInterface
      * @return array the stats for the model
      */
     public function stats();
+
+    /**
+     * Return an array of aggregate statistics for the resource model collection.
+     * @return array the stats for the collection
+     */
+    public function aggregate();
 }

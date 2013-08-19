@@ -102,6 +102,9 @@ class Model extends Base
             'stats' => array(
                 'class' => 'Restyii\Action\Item\Stats',
             ),
+            'aggregate' => array(
+                'class' => 'Restyii\Action\Collection\Aggregate',
+            ),
 
             // the following actions operate on relations
 
