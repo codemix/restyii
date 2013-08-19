@@ -16,7 +16,7 @@ class Form extends Base
     /**
      * @var string[] the file extensions for this format.
      */
-    public $fileExtensions = array();
+    public $fileExtensions = array('form');
 
     /**
      * @var string[] the mime types for this format,
@@ -30,7 +30,7 @@ class Form extends Base
      * @inheritDoc
      * Overrides the parent to work around a http header parsing bug in Yii.
      */
-    public function canFormat(Response $response)
+    public function matchAcceptTypes(Request $request)
     {
         if (isset($_SERVER['HTTP_ACCEPT'])) {
             foreach($this->mimeTypes as $mime)

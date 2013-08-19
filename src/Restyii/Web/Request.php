@@ -138,11 +138,11 @@ class Request extends \CHttpRequest
                 'json' => new \Restyii\MimeType\JSON(),
                 'jsonp' => new \Restyii\MimeType\JSONP(),
                 'form' => new \Restyii\MimeType\Form(),
-                'html' => new \Restyii\MimeType\HTML(),
-                'xml' => new \Restyii\MimeType\XML(),
                 'csv' => new \Restyii\MimeType\CSV(),
                 'tsv' => new \Restyii\MimeType\TSV(),
                 'markdown' => new \Restyii\MimeType\Markdown(),
+                'html' => new \Restyii\MimeType\HTML(),
+                'xml' => new \Restyii\MimeType\XML(),
             );
         return $this->_availableMimeTypes;
     }
