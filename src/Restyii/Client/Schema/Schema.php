@@ -115,6 +115,11 @@ class Schema extends \CAttributeCollection
             return false;
         }
 
+        // detect resource authentication error
+        if(array_key_exists('type', $config) && $config['type'] = 'CHttpException') {
+            throw new \CHttpException(400, 'Error fetching '.$name.'. '.$config['type'].": ".$config['message'], 1);
+        }
+
         $resource  = new Resource($config);
         $this->saveResourceToCache($resource);
         return $resource;
