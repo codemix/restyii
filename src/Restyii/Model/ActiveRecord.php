@@ -74,6 +74,38 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
+     * Returns a list of scenarios and the corresponding safe attributes.
+     *
+     * Child classes should override this method to define which attributes
+     * are safe under which scenario.
+     *
+     * The default implementation returns null, which gives you the default
+     * behavior of CActiveRecord.
+     *
+     * @return array|null list of scenarios and corresponding active attributes or null for default behavior
+     */
+    public function scenarios()
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSafeAttributeNames()
+    {
+        $scenarios = $this->scenarios();
+        $scenario = $this->getScenario();
+        if($scenarios===null) {
+            return parent::getSafeAttributeNames();
+        } elseif(isset($scenarios[$scenario])) {
+            return $scenarios[$scenario];
+        } else {
+            return array();
+        }
+    }
+
+    /**
      * Declares the descriptions for the attributes.
      * @return array the descriptions, attribute => description
      */
@@ -119,10 +151,9 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
-     * Declares whether or not certain attributes are visible or not.
-     * @return array the attributes with their visibilities
+     * @return array the names of attributes that should not be visible
      */
-    public function attributeVisibilities()
+    public function hiddenAttributes()
     {
         return array();
     }
@@ -321,23 +352,13 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     }
 
     /**
-     * Determines whether or not the given attribute is visible.
      * @param string $attribute the name of the attribute
      *
-     * @return bool true if the attribute is visible
+     * @return bool whether the attribute is visible
      */
     public function isAttributeVisible($attribute)
     {
-        $visibilities = $this->attributeVisibilities();
-        if (isset($visibilities[$attribute]))
-            return $visibilities[$attribute];
-        if ($this->isAttributeSafe($attribute))
-            return true;
-        $pk = $this->getTableSchema()->primaryKey;
-        if (is_array($pk))
-            return in_array($attribute, $pk);
-        else
-            return $attribute == $pk;
+        return !in_array($attribute, $this->hiddenAttributes());
     }
 
     /**
@@ -347,31 +368,15 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     public function getVisibleAttributeNames()
     {
         $attributes = array();
-        $visibilities = $this->attributeVisibilities();
 
-        $pk = $this->getTableSchema()->primaryKey;
-        if (is_array($pk)) {
-            foreach($pk as $name) {
-                if (isset($visibilities[$name]))
-                    continue;
-                else
-                    $attributes[] = $name;
+        $hiddenAttributes = $this->hiddenAttributes();
+
+        foreach($this->attributeNames() as $name) {
+            if(!in_array($name, $hiddenAttributes)) {
+                $attributes[] = $name;
             }
         }
-        else {
-            if (!isset($visibilities[$pk]))
-                $attributes[] = $pk;
-        }
 
-        foreach($visibilities as $name => $isVisible) {
-            if ($isVisible)
-                $attributes[] = $name;
-        }
-
-        foreach($this->getSafeAttributeNames() as $name) {
-            if (!in_array($name, $attributes) && !isset($visibilities[$name]))
-                $attributes[] = $name;
-        }
         return $attributes;
     }
 
@@ -591,10 +596,9 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $criteria = new \CDbCriteria();
         $alias = $this->getTableAlias(false, false);
         if (!empty($params['q'])) {
-            $safeAttributes = $this->getSafeAttributeNames();
-            $columns = $this->getTableSchema()->columns;
+            $visibleAttributes = $this->getVisibleAttributeNames();
             foreach($safeAttributes as $attribute) {
-                if (!isset($columns[$attribute]))
+                if (!in_array($attribute, $visibleAttributes))
                     continue;
                 $column = $columns[$attribute];
                 if ($column->type == "string")
