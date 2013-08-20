@@ -116,7 +116,7 @@ class Schema extends \CAttributeCollection
         }
 
         // detect resource authentication error
-        if(array_key_exists('type', $config) && $config['type'] = 'CHttpException') {
+        if(is_array($config) && array_key_exists('type', $config) && $config['type'] = 'CHttpException') {
             throw new \CHttpException(400, 'Error fetching '.$name.'. '.$config['type'].": ".$config['message'], 1);
         }
 
