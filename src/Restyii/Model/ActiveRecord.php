@@ -79,17 +79,14 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      * Child classes should override this method to define which attributes
      * are safe under which scenario.
      *
-     * The default implementation returns a reserved scenario 'default', which
-     * will contain all attributes that have a validation rule in the current
-     * scenario. This gives you the default behavior of CActiveRecord.
+     * The default implementation returns null, which gives you the default
+     * behavior of CActiveRecord.
      *
-     * @return array list of scenarios and corresponding active attributes.
+     * @return array|null list of scenarios and corresponding active attributes or null for default behavior
      */
     public function scenarios()
     {
-        return array(
-            'default' => parent::getSafeAttributeNames(),
-        );
+        return null;
     }
 
     /**
@@ -99,10 +96,10 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     {
         $scenarios = $this->scenarios();
         $scenario = $this->getScenario();
-        if(isset($scenarios[$scenario])) {
+        if($scenarios===null) {
+            return parent::getSafeAttributeNames();
+        } elseif(isset($scenarios[$scenario])) {
             return $scenarios[$scenario];
-        } elseif(isset($scenarios['default'])) {
-            return $scenarios['default'];
         } else {
             return array();
         }
@@ -361,7 +358,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      */
     public function isAttributeVisible($attribute)
     {
-        return in_array($attribute, $this->hiddenAttributes());
+        return !in_array($attribute, $this->hiddenAttributes());
     }
 
     /**
@@ -372,10 +369,9 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     {
         $attributes = array();
 
-        $columns = $this->getTableSchema()->columns;
         $hiddenAttributes = $this->hiddenAttributes();
 
-        foreach($columns as $name => $column) {
+        foreach($this->attributeNames() as $name) {
             if(!in_array($name, $hiddenAttributes)) {
                 $attributes[] = $name;
             }
