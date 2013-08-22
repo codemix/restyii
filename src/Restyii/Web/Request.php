@@ -198,6 +198,14 @@ class Request extends \CHttpRequest
     }
 
     /**
+     * @return bool true if the request came via PJAX
+     */
+    public function getIsPjaxRequest()
+    {
+        return !empty($_SERVER['HTTP_X_PJAX']);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getRequestUri()

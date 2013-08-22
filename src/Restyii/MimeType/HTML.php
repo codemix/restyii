@@ -52,11 +52,23 @@ class HTML extends Form
             $params['error'] = $response->data;
         else
             $params['data'] = $response->data;
-
-        if ($request->getIsAjaxRequest())
-            return $controller->renderPartial($response->getViewName(), $params, true);
-        else
-            return $controller->render($response->getViewName(), $params, true);
+        try {
+            if ($request->getIsPjaxRequest()) {
+                if (isset($controller->pjaxLayout))
+                    $controller->layout = $controller->pjaxLayout;
+                else
+                    $controller->layout = '//layouts/pjax';
+                return $controller->render($response->getViewName(), $params, true);
+            }
+            else if ($request->getIsAjaxRequest())
+                return $controller->renderPartial($response->getViewName(), $params, true);
+            else
+                return $controller->render($response->getViewName(), $params, true);
+        }
+        catch (\Exception $e) {
+            echo '<pre>'.print_r($e, true).'</pre>';
+            return null;
+        }
     }
 
 

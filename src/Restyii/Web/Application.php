@@ -60,15 +60,19 @@ class Application extends \CWebApplication
         parent::registerCoreComponents();
 
         $components=array(
-            'schema'=>array(
-                'class'=>'Restyii\\Meta\\Schema',
-            ),
-            'urlManager' => array(
-                'class' => 'Restyii\\Web\\UrlManager',
+            'eventStream' => array(
+                'class' => 'Restyii\Event\LocalEventStream',
             ),
             'request' => array(
-                'class' => 'Restyii\\Web\\Request',
+                'class' => 'Restyii\Web\Request',
             ),
+            'schema'=>array(
+                'class'=>'Restyii\Meta\Schema',
+            ),
+            'urlManager' => array(
+                'class' => 'Restyii\Web\UrlManager',
+            ),
+
         );
 
         $this->setComponents($components);
