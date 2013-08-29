@@ -11,14 +11,34 @@ use CModel;
 class ActiveForm extends \CActiveForm
 {
     /**
+     * @var bool whether or not form field names should be qualified
+     * using the model name as a prefix (default Yii behavior).
+     */
+    public $qualifyNames = true;
+
+    /**
+     * Gets the appropriate itemprop name for an attribute
+     * @param string $attribute the attribute name
+     *
+     * @return string the itemprop name
+     */
+    public function getItemPropName($attribute)
+    {
+        if (preg_match('/^(.*)\[(.+)?\]$/', $attribute, $matches))
+            return trim($matches[1]);
+        else
+            return $attribute;
+    }
+
+    /**
      * @inheritDoc
      */
     public function textField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::textField($model, $attribute, $htmlOptions);
     }
 
@@ -59,10 +79,10 @@ class ActiveForm extends \CActiveForm
      */
     public function urlField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::urlField($model, $attribute, $htmlOptions);
     }
 
@@ -71,10 +91,10 @@ class ActiveForm extends \CActiveForm
      */
     public function emailField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::emailField($model, $attribute, $htmlOptions);
     }
 
@@ -83,10 +103,10 @@ class ActiveForm extends \CActiveForm
      */
     public function numberField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::numberField($model, $attribute, $htmlOptions);
     }
 
@@ -95,10 +115,10 @@ class ActiveForm extends \CActiveForm
      */
     public function rangeField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::rangeField($model, $attribute, $htmlOptions);
     }
 
@@ -107,10 +127,10 @@ class ActiveForm extends \CActiveForm
      */
     public function dateField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::dateField($model, $attribute, $htmlOptions);
     }
 
@@ -119,10 +139,10 @@ class ActiveForm extends \CActiveForm
      */
     public function timeField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::timeField($model, $attribute, $htmlOptions);
     }
 
@@ -131,10 +151,10 @@ class ActiveForm extends \CActiveForm
      */
     public function dateTimeField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::dateTimeField($model, $attribute, $htmlOptions);
     }
 
@@ -143,10 +163,10 @@ class ActiveForm extends \CActiveForm
      */
     public function dateTimeLocalField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::dateTimeLocalField($model, $attribute, $htmlOptions);
     }
 
@@ -155,10 +175,10 @@ class ActiveForm extends \CActiveForm
      */
     public function weekField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::weekField($model, $attribute, $htmlOptions);
     }
 
@@ -167,10 +187,10 @@ class ActiveForm extends \CActiveForm
      */
     public function colorField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::colorField($model, $attribute, $htmlOptions);
     }
 
@@ -179,10 +199,10 @@ class ActiveForm extends \CActiveForm
      */
     public function telField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::telField($model, $attribute, $htmlOptions);
     }
 
@@ -191,10 +211,10 @@ class ActiveForm extends \CActiveForm
      */
     public function searchField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::searchField($model, $attribute, $htmlOptions);
     }
 
@@ -203,10 +223,10 @@ class ActiveForm extends \CActiveForm
      */
     public function hiddenField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::hiddenField($model, $attribute, $htmlOptions);
     }
 
@@ -215,10 +235,10 @@ class ActiveForm extends \CActiveForm
      */
     public function passwordField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::passwordField($model, $attribute, $htmlOptions);
     }
 
@@ -227,10 +247,10 @@ class ActiveForm extends \CActiveForm
      */
     public function textArea($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::textArea($model, $attribute, $htmlOptions);
     }
 
@@ -239,10 +259,10 @@ class ActiveForm extends \CActiveForm
      */
     public function fileField($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::fileField($model, $attribute, $htmlOptions);
     }
 
@@ -251,10 +271,10 @@ class ActiveForm extends \CActiveForm
      */
     public function radioButton($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::radioButton($model, $attribute, $htmlOptions);
     }
 
@@ -263,7 +283,7 @@ class ActiveForm extends \CActiveForm
      */
     public function checkBox($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         return parent::checkBox($model, $attribute, $htmlOptions);
     }
@@ -273,10 +293,10 @@ class ActiveForm extends \CActiveForm
      */
     public function dropDownList($model, $attribute, $data, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::dropDownList($model, $attribute, $data, $htmlOptions);
     }
 
@@ -285,10 +305,10 @@ class ActiveForm extends \CActiveForm
      */
     public function listBox($model, $attribute, $data, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::listBox($model, $attribute, $data, $htmlOptions);
     }
 
@@ -297,10 +317,10 @@ class ActiveForm extends \CActiveForm
      */
     public function checkBoxList($model, $attribute, $data, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::checkBoxList($model, $attribute, $data, $htmlOptions);
     }
 
@@ -309,10 +329,10 @@ class ActiveForm extends \CActiveForm
      */
     public function radioButtonList($model, $attribute, $data, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['name']))
+        if (!$this->qualifyNames && !isset($htmlOptions['name']))
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
-            $htmlOptions['itemprop'] = $attribute;
+            $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
         return parent::radioButtonList($model, $attribute, $data, $htmlOptions);
     }
 
