@@ -607,7 +607,6 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         if (!empty($params['q'])) {
             $columns = $this->getTableSchema()->columns;
             $safeAttributes = $this->getSafeAttributeNames();
-            $visibleAttributes = $this->getVisibleAttributeNames();
             foreach($safeAttributes as $attribute) {
                 if (!isset($columns[$attribute]))
                     continue;
