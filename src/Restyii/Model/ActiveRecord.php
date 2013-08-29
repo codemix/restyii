@@ -596,10 +596,8 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $criteria = new \CDbCriteria();
         $alias = $this->getTableAlias(false, false);
         if (!empty($params['q'])) {
-            $visibleAttributes = $this->getVisibleAttributeNames();
-            foreach($safeAttributes as $attribute) {
-                if (!in_array($attribute, $visibleAttributes))
-                    continue;
+            $columns = $this->getTableSchema()->columns;
+            foreach($this->getVisibleAttributeNames() as $attribute) {
                 $column = $columns[$attribute];
                 if ($column->type == "string")
                     $criteria->compare($alias.'.'.$attribute, $params['q'], true, 'OR');
