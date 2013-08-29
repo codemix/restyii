@@ -222,10 +222,11 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             return $primitives[$attribute];
         $type = $this->getAttributeType($attribute);
         switch($type) {
-            case 'integer';
-            case 'float';
-            case 'boolean';
-            case 'string';
+            case 'integer':
+            case 'float':
+            case 'boolean':
+            case 'string':
+            case 'array':
                 return $type;
             default;
                 return 'string';
@@ -253,6 +254,8 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
                 return 'boolean';
             case 'enum';
                 return 'choice';
+            case 'array';
+                return 'array';
             case 'date';
                 return 'date';
             case 'datetime';
@@ -299,6 +302,12 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
                 break;
             case 'boolean';
                 $inputType = 'checkbox';
+                break;
+            case 'array';
+                $inputType = 'checkboxlist';
+                $methodName = $attribute.'Labels';
+                if (method_exists($this, $methodName))
+                    $htmlOptions['items'] = $this->{$methodName}();
                 break;
             case 'choice';
                 $inputType = 'radiolist';
@@ -596,9 +605,11 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         $criteria = new \CDbCriteria();
         $alias = $this->getTableAlias(false, false);
         if (!empty($params['q'])) {
+            $columns = $this->getTableSchema()->columns;
+            $safeAttributes = $this->getSafeAttributeNames();
             $visibleAttributes = $this->getVisibleAttributeNames();
             foreach($safeAttributes as $attribute) {
-                if (!in_array($attribute, $visibleAttributes))
+                if (!isset($columns[$attribute]))
                     continue;
                 $column = $columns[$attribute];
                 if ($column->type == "string")

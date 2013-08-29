@@ -47,6 +47,10 @@ class Base extends \CFormatter
     public function formatAttribute($model, $attribute)
     {
         $format = $model->getAttributeFormat($attribute);
+        if ($format == 'choice' && method_exists($model, $attribute.'Labels')) {
+            $methodName = $attribute.'Labels';
+            return $this->formatChoice($model->{$attribute}, $model->{$methodName}());
+        }
         $methodName = 'format'.$format;
         if (method_exists($this, $methodName))
             return $this->{$methodName}($model->{$attribute});
