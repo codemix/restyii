@@ -115,9 +115,9 @@ class Schema extends \CAttributeCollection
             return false;
         }
 
-        // detect resource authentication error
-        if(is_array($config) && array_key_exists('type', $config) && $config['type'] = 'CHttpException') {
-            throw new \CHttpException(400, 'Error fetching '.$name.'. '.$config['type'].": ".$config['message'], 1);
+        // detect http errors caught by the resource fetch call
+        if(is_array($config) && array_key_exists('type', $config) && $config['type'] === 'CHttpException') {
+            throw new \CHttpException($config['code'], 'Error fetching resource \''.$name.'\'. '.$config['type'].": ".$config['message'], 1);
         }
 
         $resource  = new Resource($config);
