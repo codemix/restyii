@@ -115,6 +115,7 @@ class Schema extends \CAttributeCollection
             return false;
         }
 
+
         // detect http errors caught by the resource fetch call
         if(is_array($config) && array_key_exists('type', $config) && $config['type'] === 'CHttpException') {
             throw new \CHttpException($config['code'], 'Error fetching resource \''.$name.'\'. '.$config['type'].": ".$config['message'], 1);
