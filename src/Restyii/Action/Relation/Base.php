@@ -190,6 +190,20 @@ abstract class Base extends \Restyii\Action\Item\Base
         return $dataProvider;
     }
 
+    /**
+     * Gets the user input, if any, or returns false if there is none.
+     * @return array|bool the user input, or false if none is present
+     */
+    protected function getUserInput()
+    {
+        $input = \Restyii\Action\Base::getUserInput();
+        $model = $this->staticRelatedModel();
+        $modelClass = get_class($model);
+        if (isset($input[$modelClass]) && count($input[$modelClass]))
+            $input = $input[$modelClass];
+
+        return $input;
+    }
 
     /**
      * @inheritDoc
