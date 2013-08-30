@@ -4,6 +4,7 @@ namespace Restyii\Controller;
 
 use Restyii\Utils\String;
 use \Restyii\Web\Response;
+use Yii;
 
 class Base extends \CController
 {
@@ -101,5 +102,37 @@ class Base extends \CController
         }
         return true;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function resolveViewFile($viewName, $viewPath, $basePath, $moduleViewPath = null)
+    {
+        $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
+        if(empty($viewName))
+            return false;
+
+        if($moduleViewPath===null)
+            $moduleViewPath=$basePath;
+
+        if(($renderer=$app->getViewRenderer())!==null)
+            $extension=$renderer->fileExtension;
+        else
+            $extension='.php';
+        if($viewName[0]==='/')
+        {
+            if(strncmp($viewName,'//',2)===0)
+                $viewFile=$basePath.$viewName;
+            else
+                $viewFile=$moduleViewPath.$viewName;
+        }
+        elseif(strpos($viewName,'.'))
+            $viewFile=Yii::getPathOfAlias($viewName);
+        else
+            $viewFile=$viewPath.DIRECTORY_SEPARATOR.$viewName;
+
+        return $viewFile.$extension;
+    }
+
 
 }
