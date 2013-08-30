@@ -11,6 +11,16 @@ class Schema extends \CApplicationComponent
 {
 
     /**
+     * @var int the number of seconds to cache for, or 0 to disable caching
+     */
+    public $cachingDuration = 0;
+
+    /**
+     * @var string the name of the application component used for caching
+     */
+    public $cacheID = 'cache';
+
+    /**
      * @var array the schema data
      */
     protected $_data = array();
@@ -19,6 +29,16 @@ class Schema extends \CApplicationComponent
      * @var array the service description
      */
     protected $_serviceDescription;
+
+    /**
+     * @return \CCache|bool the cache to use for the schema
+     */
+    public function getCache()
+    {
+        if (!$this->cachingDuration)
+            return false;
+        return \Yii::app()->getComponent($this->cacheID);
+    }
 
     /**
      * @return array
@@ -225,6 +245,8 @@ class Schema extends \CApplicationComponent
      */
     public function getControllerInstances($module = null)
     {
+        if (($cache = $this->getCache()) !== false && ($data = $cache->get('app.schema.controller-instances')) !== false)
+            return $data;
         $uniqueId = $this->getModuleUniqueId($module);
         if (!isset($this->_data[$uniqueId]))
             $this->_data[$uniqueId] = array();
@@ -235,12 +257,16 @@ class Schema extends \CApplicationComponent
                 },
                 $this->createControllerInstances($module)
             );
-        return array_map(
+        $instances = array_map(
             function($controller) {
                 return $controller['instance'];
             },
             $this->_data[$uniqueId]['controllers']
         );
+
+        if ($cache)
+            $cache->set('app.schema.controller-instances', $instances, $this->cachingDuration);
+        return $instances;
     }
 
     /**
