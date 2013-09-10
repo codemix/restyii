@@ -399,7 +399,7 @@ abstract class Base extends \CAction
         $controller->setPageTitle($this->label());
         $userInput = $this->getUserInput();
         $requestType = \Yii::app()->getRequest()->getRequestType();
-        if ($requestType != $this->verb) {
+        if ($this->verb !== null && $requestType != $this->verb) {
             if ($requestType == 'GET')
                 $result = $this->present($userInput);
             else
