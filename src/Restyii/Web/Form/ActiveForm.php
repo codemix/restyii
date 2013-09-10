@@ -47,7 +47,7 @@ class ActiveForm extends \CActiveForm
      */
     public function error($model, $attribute, $htmlOptions = array(), $enableAjaxValidation = true, $enableClientValidation = true)
     {
-        if (!isset($htmlOptions['inputID']))
+        if (!$this->qualifyNames && !isset($htmlOptions['inputID']))
             $htmlOptions['inputID'] = \CHtml::getIdByName($attribute);
         if (!isset($htmlOptions['itemerror']))
             $htmlOptions['itemerror'] = $attribute;
@@ -59,7 +59,7 @@ class ActiveForm extends \CActiveForm
      */
     public function label($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['for']))
+        if (!$this->qualifyNames && !isset($htmlOptions['for']))
             $htmlOptions['for'] = \CHtml::getIdByName($attribute);
         return parent::label($model, $attribute, $htmlOptions);
     }
@@ -69,7 +69,7 @@ class ActiveForm extends \CActiveForm
      */
     public function labelEx($model, $attribute, $htmlOptions = array())
     {
-        if (!isset($htmlOptions['for']))
+        if (!$this->qualifyNames && !isset($htmlOptions['for']))
             $htmlOptions['for'] = \CHtml::getIdByName($attribute);
         return parent::labelEx($model, $attribute, $htmlOptions);
     }
