@@ -18,10 +18,11 @@ class UrlManager extends \CUrlManager
      */
     public function parseUrl($url, $verb = 'GET')
     {
-        if (!is_string($url)) {
+        if (!is_string($url))
             return parent::parseUrl($url);
-        }
+
         $request = new Request();
+
         $request->setRequestType($verb);
         $request->setUrl($url);
         $oldGET = $_GET;
