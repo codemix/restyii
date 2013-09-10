@@ -9,7 +9,12 @@ class Error extends Base
     /**
      * @var string the HTTP verb for this action.
      */
-    public $verb = "GET";
+    public $verb = null;
+
+    /**
+     * @var string the name of the view to render for this action
+     */
+    protected $_viewName = "//default/error";
 
     /**
      * @inheritDoc
@@ -65,11 +70,9 @@ class Error extends Base
     public function perform($userInput, $loaded = null)
     {
         $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
-
-        if($error=\Yii::app()->errorHandler->getError())
-        {
+        $app->getRequest()->getResponse()->setViewName($this->getViewName());
+        if($error=$app->errorHandler->getError())
             return array($error['code'], $error);
-        }
         else
             return array(500, new \Exception('Internal Server Error'));
     }
