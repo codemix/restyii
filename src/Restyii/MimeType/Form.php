@@ -51,9 +51,13 @@ class Form extends Base
      */
     public function parse(Request $request)
     {
-        if ($request->getIsPostRequest())
-            return count($_POST) ? $_POST : null;
-        else if ($request->getIsPutRequest()) {
+        if ($request->getIsPostRequest()) {
+            $data = count($_POST) ? $_POST : array();
+            foreach($_FILES as $name => $file) {
+                $data[$name] = \CUploadedFile::getInstanceByName($name);
+            }
+            return $data===array() ? null : $data;
+        } else if ($request->getIsPutRequest()) {
             $data = $request->getRestParams();
             return $data && count($data) ? $data : null;
         }
