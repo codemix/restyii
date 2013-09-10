@@ -16,6 +16,8 @@ use Yii;
  * @property \Restyii\Web\Request $request the http request
  * @property \Restyii\Event\AbstractEventStream $eventStream the application event stream
  *
+ * @method \Restyii\Web\Request getRequest()
+ *
  * @author Charles Pick <charles@codemix.com>
  * @package Restyii\Web
  */
