@@ -87,10 +87,15 @@ class Response extends \CComponent
 
     /**
      * Sets the format for the response
-     * @param \Restyii\MimeType\Base $format the response format
+     * @param \Restyii\MimeType\Base|string $format the response format
      */
     public function setFormat($format)
     {
+        if (is_string($format)) {
+            $request = $this->getRequest();
+            $mimeTypes = $request->getAvailableMimeTypes();
+            $format = $mimeTypes[$format];
+        }
         $this->_format = $format;
     }
 
