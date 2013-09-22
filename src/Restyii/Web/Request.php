@@ -190,6 +190,8 @@ class Request extends \CHttpRequest
     public function respond($code = 200, $data = null, $headers = null, $terminateApplication = true)
     {
         $response = $this->getResponse();
+        if (!empty($_GET['prettyPrint']))
+            $response->prettyPrint = true;
         $response->code = $code;
         $response->data = $data;
         if ($headers !== null)
