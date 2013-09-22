@@ -13,6 +13,9 @@ abstract class Root extends Base
             'index' => array(
                 'class' => 'Restyii\\Action\\Root\\Index',
             ),
+            'trace' => array(
+                'class' => 'Restyii\Action\Generic\Trace',
+            ),
             'error' => array(
                 'class' => 'Restyii\\Action\\Root\\Error',
             )

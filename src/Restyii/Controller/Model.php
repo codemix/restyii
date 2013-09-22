@@ -105,7 +105,9 @@ class Model extends Base
             'aggregate' => array(
                 'class' => 'Restyii\Action\Collection\Aggregate',
             ),
-
+            'trace' => array(
+                'class' => 'Restyii\Action\Generic\Trace',
+            ),
             // the following actions operate on relations
 
             'createRelated' => array(
