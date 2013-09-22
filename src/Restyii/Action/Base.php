@@ -18,6 +18,11 @@ abstract class Base extends \CAction
     public $verb = 'GET';
 
     /**
+     * @var bool whether the HTTP verb should be strictly enforced
+     */
+    public $enforceVerb = true;
+
+    /**
      * @var bool whether or not to enable caching for this action, defaults to false
      */
     public $enableCache = false;
@@ -400,7 +405,7 @@ abstract class Base extends \CAction
         $userInput = $this->getUserInput();
         $requestType = \Yii::app()->getRequest()->getRequestType();
         if ($this->verb !== null && $requestType != $this->verb) {
-            if ($requestType == 'GET')
+            if (!$this->enforceVerb || $requestType == 'GET')
                 $result = $this->present($userInput);
             else
                 throw new \CHttpException(405, \Yii::t('resource', "{actionLabel} does not support the '{methodName}' method.",
