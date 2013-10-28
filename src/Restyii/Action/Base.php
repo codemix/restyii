@@ -410,11 +410,46 @@ abstract class Base extends \CAction
             else
                 throw new \CHttpException(405, \Yii::t('resource', "{actionLabel} does not support the '{methodName}' method.",
                     array('{actionLabel}' => $this->label(), '{methodName}' => $requestType)));
+        } else {
+            $event = new PerformEvent;
+            $this->onBeforePerform($event);
+            if($event->isValid) {
+                $result = $this->perform($userInput);
+                if(isset($result[0]))
+                    $event->status = $result[0];
+                if(isset($result[1]))
+                    $event->data = $result[1];
+                if(isset($result[2]))
+                    $event->headers = $result[2];
+                if(isset($result[3]))
+                    $event->terminateApplication = $result[3];
+                $this->onAfterPerform($event);
+            }
+            $result = array($event->status, $event->data, $event->headers, $event->terminateApplication);
         }
-        else
-            $result = $this->perform($userInput);
-
         call_user_func_array(array($this, 'respond'), $result);
+    }
+
+    /**
+     * This event is raised before the action is performed. To cancel performing the action
+     * you can set the `isValid` property of the event object to false.
+     *
+     * @param PerformEvent $event
+     */
+    public function onBeforePerform($event)
+    {
+        $this->raiseEvent('onBeforePerform',$event);
+    }
+
+    /**
+     * This event is raised after an action was performed and before the response is sent.
+     * You can change the arguments to `respond()` through the `$event` properties.
+     *
+     * @param PerformEvent $event
+     */
+    public function onAfterPerform($event)
+    {
+        $this->raiseEvent('onAfterPerform',$event);
     }
 
     /**
