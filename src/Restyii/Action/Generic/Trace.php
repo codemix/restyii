@@ -77,9 +77,11 @@ class Trace extends Base
      */
     public function getTrace($userInput, $loaded = null)
     {
+        $request = \Yii::app()->getRequest(); /* @var \Restyii\Web\Request $request */
         $trace = array(
             'ip' => $_SERVER['REMOTE_ADDR'],
-            'headers' => getallheaders(),
+            'method' => $request->getMethod(),
+            'headers' => $request->getHeaders(),
             'params' => $_GET,
             'input' => $userInput,
             'route' => $this->getController()->getRoute(),
