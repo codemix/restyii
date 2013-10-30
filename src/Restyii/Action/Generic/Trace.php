@@ -23,9 +23,7 @@ class Trace extends Base
      */
     public function label()
     {
-        return \Yii::t('resource', "{resourceLabel} Trace", array(
-            '{resourceLabel}' => $this->staticModel()->classLabel()
-        ));
+        return \Yii::t('resource', "Trace");
     }
 
     /**
@@ -33,10 +31,7 @@ class Trace extends Base
      */
     public function description()
     {
-        $model = $this->staticModel();
-        return \Yii::t('resource', "Traces a request for {collectionLabel}.", array(
-            '{collectionLabel}' => $model->classLabel(true),
-        ));
+        return \Yii::t('resource', "Traces a request");
     }
 
     /**
@@ -77,15 +72,13 @@ class Trace extends Base
      */
     public function getTrace($userInput, $loaded = null)
     {
-        $trace = array(
+        return array(
             'ip' => $_SERVER['REMOTE_ADDR'],
             'headers' => getallheaders(),
             'params' => $_GET,
             'input' => $userInput,
             'route' => $this->getController()->getRoute(),
         );
-
-        return $trace;
     }
 
 }
