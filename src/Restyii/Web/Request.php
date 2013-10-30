@@ -58,6 +58,16 @@ class Request extends \CHttpRequest
      */
     protected $_action;
 
+    /**
+     * @var array the normalized http headers
+     */
+    protected $_headers;
+
+    /**
+     * @var string the request method, e.g. 'GET'
+     */
+    protected $_method;
+
     protected $_requestUri;
     protected $_hostInfo;
     protected $_requestType;
@@ -348,4 +358,61 @@ class Request extends \CHttpRequest
         }
         return $this->_userInput;
     }
+
+    /**
+     * Sets the request method
+     *
+     * @param string $method
+     *
+     * @return $this the current object
+     */
+    public function setMethod($method)
+    {
+        $this->_method = strtoupper($method);
+        return $this;
+    }
+
+    /**
+     * Gets the request method
+     * @return string
+     */
+    public function getMethod()
+    {
+        if ($this->_method === null) {
+            if (isset($_POST['_method']))
+                $this->_method = strtoupper($_POST['_method']);
+            else
+                $this->_method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
+        }
+        return $this->_method;
+    }
+
+
+
+    /**
+     * Gets the normalized headers for the request
+     * @return array
+     */
+    public function getHeaders()
+    {
+        if ($this->_headers === null) {
+            $this->_headers = array();
+            if (function_exists('getallheaders')) {
+                foreach(getallheaders() as $key => $value) {
+                    $this->_headers[strtolower($key)] = $value;
+                }
+            }
+            else {
+                // php fpm doesn't yet implement getallheaders
+                foreach($_SERVER as $name => $value) {
+                    if (substr($name, 0, 5) === 'HTTP_') {
+                        $this->_headers[str_replace('_', '-', strtolower(substr($name, 5)))] = $value;
+                    }
+                }
+            }
+        }
+        return $this->_headers;
+    }
+
+
 }
