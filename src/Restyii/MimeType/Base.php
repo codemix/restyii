@@ -179,7 +179,8 @@ abstract class Base extends \CComponent
         $prepared = array();
         $links = $model->links();
         foreach($model->getVisibleAttributeNames() as $name)
-            $prepared[$name] = $model->{$name};
+            $prepared[$name] = $this->prepare($model->{$name});
+
 
         if ($model instanceof ActiveRecord) {
             $embedded = array();
@@ -190,13 +191,16 @@ abstract class Base extends \CComponent
             }
             if (count($embedded))
                 $prepared['_embedded'] = $embedded;
+
+            if ($model->getIsDeleted())
+                $prepared['_deleted'] = true;
         }
 
         if ($model->hasErrors())
             $prepared['_errors'] = $model->getErrors();
-        if ($model->getIsDeleted())
-            $prepared['_deleted'] = true;
+
         $prepared['_links'] = $links;
+
         return $prepared;
     }
 
