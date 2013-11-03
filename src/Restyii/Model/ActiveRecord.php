@@ -513,6 +513,8 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         return $this->_isDeleted;
     }
 
+
+
     /**
      * @inheritDoc
      */
@@ -569,19 +571,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
      */
     public function createUrl($action = "read", $params = array(), $schema = false, $ampersand = '&')
     {
-        $modelClass = get_class($this);
-
-        if ($this !== $modelClass::model()) {
-            $pks = $this->getPrimaryKey();
-            if (!is_array($pks))
-                $pks = array($this->getTableSchema()->primaryKey => $pks);
-            foreach($pks as $key => $value) {
-                if (!array_key_exists($key, $params))
-                    $params[$key] = $value;
-                else if ($params[$key] === null)
-                    unset($params[$key]);
-            }
-        }
+        $params = $this->applyUrlParams($params);
         $route = '/'.$this->controllerID().'/'.$action;
         if ($schema === false)
             return \Yii::app()->createUrl($route, $params, $ampersand);
@@ -591,6 +581,29 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             return \Yii::app()->createAbsoluteUrl($route, $params, $schema, $ampersand);
     }
 
+    /**
+     * Applies the resource specific parameters when creating a URL for a resource.
+     * @param array $params the existing list of parameters
+     *
+     * @return array the parameter list
+     */
+    protected function applyUrlParams($params)
+    {
+        $modelClass = get_class($this);
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($this !== $modelClass::model()) {
+            $pks = $this->getPrimaryKey();
+            if (!is_array($pks))
+                $pks = array($this->getTableSchema()->primaryKey => $pks);
+            foreach ($pks as $key => $value) {
+                if (!array_key_exists($key, $params))
+                    $params[$key] = $value;
+                else if ($params[$key] === null)
+                    unset($params[$key]);
+            }
+        }
+        return $params;
+    }
 
     /**
      * Performs a search and returns a data provider that can return the results.
