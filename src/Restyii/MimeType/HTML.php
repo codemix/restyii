@@ -50,6 +50,8 @@ class HTML extends Form
             $params['dataProvider'] = $response->data;
         else if ($response->data instanceof \Exception)
             $params['error'] = $response->data;
+        else if (is_array($response->data) && count($response->data) && !isset($response->data[0]))
+            $params = \CMap::mergeArray($params, $response->data);
         else
             $params['data'] = $response->data;
         try {

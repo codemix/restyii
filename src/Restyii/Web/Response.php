@@ -80,8 +80,13 @@ class Response extends \CComponent
      */
     public function getViewName()
     {
-        if ($this->_viewName === null)
-            $this->_viewName = $this->getRequest()->getAction()->getViewName();
+        if ($this->_viewName === null) {
+            $action = $this->getRequest()->getAction();
+            if ($action instanceof \Restyii\Action\Base)
+                $this->_viewName = $action->getViewName();
+            else
+                $this->_viewName = $action->getId();
+        }
         return $this->_viewName;
     }
 
