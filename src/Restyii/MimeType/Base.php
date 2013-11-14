@@ -4,6 +4,7 @@ namespace Restyii\MimeType;
 
 use Restyii\Model\ActiveDataProvider;
 use Restyii\Model\ActiveRecord;
+use Restyii\Model\DataProviderInterface;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
 use \Restyii\Web\Response;
@@ -125,7 +126,7 @@ abstract class Base extends \CComponent
      */
     public function prepare($data)
     {
-        if ($data instanceof ActiveDataProvider)
+        if ($data instanceof DataProviderInterface)
             return $this->prepareActiveDataProvider($data);
         else if ($data instanceof ModelInterface)
             return $this->prepareModel($data);
@@ -140,11 +141,11 @@ abstract class Base extends \CComponent
     /**
      * Prepares a data provider
      *
-     * @param ActiveDataProvider $dataProvider the data provider to prepare
+     * @param DataProviderInterface|ActiveDataProvider $dataProvider the data provider to prepare
      *
      * @return array the prepared response
      */
-    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(DataProviderInterface $dataProvider)
     {
         $data = array_map(array($this, 'prepare'), $dataProvider->getData());
         $pagination = $dataProvider->getPagination();

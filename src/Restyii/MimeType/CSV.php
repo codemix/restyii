@@ -4,6 +4,7 @@
 namespace Restyii\MimeType;
 
 use Restyii\Model\ActiveDataProvider;
+use Restyii\Model\DataProviderInterface;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
 use \Restyii\Web\Response;
@@ -110,7 +111,7 @@ class CSV extends Base
      */
     public function prepare($data)
     {
-        if ($data instanceof \CActiveDataProvider)
+        if ($data instanceof DataProviderInterface)
             return $this->prepareActiveDataProvider($data);
         else if ($data instanceof ModelInterface)
             return $this->prepareModel($data);
@@ -123,9 +124,12 @@ class CSV extends Base
     /**
      * @inheritDoc
      */
-    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(DataProviderInterface $dataProvider)
     {
+        /* @var DataProviderInterface|ActiveDataProvider $dataProvider */
+        /* @var \CModel|\Restyii\Model\ModelInterface $model */
         $model = $dataProvider->model;
+
         if ($model instanceof \Restyii\Model\ModelInterface)
             $names = $model->getVisibleAttributeNames();
         else

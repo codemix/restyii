@@ -4,6 +4,7 @@ namespace Restyii\MimeType;
 
 use Restyii\Model\ActiveDataProvider;
 use Restyii\Model\ActiveRecord;
+use Restyii\Model\DataProviderInterface;
 use Restyii\Model\ModelInterface;
 use \Restyii\Web\Request;
 use \Restyii\Web\Response;
@@ -70,7 +71,7 @@ class Markdown extends Base
      */
     public function prepare($data)
     {
-        if ($data instanceof \CActiveDataProvider)
+        if ($data instanceof DataProviderInterface)
             return $this->prepareActiveDataProvider($data);
         else if ($data instanceof ModelInterface)
             return $this->prepareModel($data);
@@ -83,8 +84,10 @@ class Markdown extends Base
     /**
      * @inheritDoc
      */
-    public function prepareActiveDataProvider(ActiveDataProvider $dataProvider)
+    public function prepareActiveDataProvider(DataProviderInterface $dataProvider)
     {
+        /* @var DataProviderInterface|ActiveDataProvider $dataProvider */
+        /* @var \CModel|\Restyii\Model\ModelInterface $model */
         $out = array();
         $model = $dataProvider->model;
         if ($model instanceof ModelInterface) {
