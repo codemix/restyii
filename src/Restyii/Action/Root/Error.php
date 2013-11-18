@@ -70,9 +70,18 @@ class Error extends Base
     public function perform($userInput, $loaded = null)
     {
         $app = \Yii::app(); /* @var \Restyii\Web\Application $app */
+        $errorHandler = $app->getErrorHandler();
         $app->getRequest()->getResponse()->setViewName($this->getViewName());
-        if($error=$app->errorHandler->getError())
-            return array($error['code'], $error);
+        if ($error = $errorHandler->getError()) {
+            if ($exception = $errorHandler->getException())
+                return array($error['code'], $exception);
+            else
+                return array($error['code'], array(
+                    'code' => $error['code'],
+                    'type' => $error['type'],
+                    'message' => $error['message'],
+                ));
+        }
         else
             return array(500, new \Exception('Internal Server Error'));
     }
