@@ -72,7 +72,7 @@ class Schema extends \CApplicationComponent
                 if (!isset($modelClasses[$modelClass]))
                     $modelClasses[$modelClass] = $action->staticModel();
                 $desc['operations'][$actionId.ucfirst($controllerId)] = array(
-                    'httpMethod' => $action->verb,
+                    'httpMethod' => is_array($action->verb) ? $action->verb[0] : $action->verb,
                     'uri' => $action->createUrlTemplate(),
                     'summary' => $action->description(),
                     'responseClass' => $action instanceof MultipleTargetInterface ? $modelClass.'Collection' : $modelClass,

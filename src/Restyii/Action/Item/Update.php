@@ -10,7 +10,7 @@ class Update extends Base implements \Restyii\Action\SingleTargetInterface
     /**
      * @var string the HTTP verb for this action.
      */
-    public $verb = "POST";
+    public $verb = array("POST", "PUT");
 
     /**
      * @inheritDoc
