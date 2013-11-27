@@ -179,7 +179,7 @@ class Options extends Base
         return array(
             'label' => $action->label(),
             'description' => $action->description(),
-            'verb' => $action->verb,
+            'verb' => is_array($action->verb) ? $action->verb[0] : $action->verb,
             'params' => $action->params(),
             'headers' => $action->requestHeaders(),
             'link' => array(

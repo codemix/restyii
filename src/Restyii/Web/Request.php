@@ -414,5 +414,17 @@ class Request extends \CHttpRequest
         return $this->_headers;
     }
 
+    /**
+     * Gets the header with the given name
+     * @param string $name the header name
+     *
+     * @return string|null the header value or null if it's not set
+     */
+    public function getHeader($name)
+    {
+        $name = strtolower($name);
+        $headers = $this->getHeaders();
+        return isset($headers[$name]) ? $headers[$name] : null;
+    }
 
 }

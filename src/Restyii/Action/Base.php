@@ -13,7 +13,7 @@ use Restyii\Utils\String;
 abstract class Base extends \CAction
 {
     /**
-     * @var string the HTTP verb for this resource action.
+     * @var string|array the HTTP verb(s) for this resource action.
      */
     public $verb = 'GET';
 
@@ -404,7 +404,11 @@ abstract class Base extends \CAction
         $controller->setPageTitle($this->label());
         $userInput = $this->getUserInput();
         $requestType = \Yii::app()->getRequest()->getRequestType();
-        if ($this->verb !== null && $requestType != $this->verb) {
+        if ($this->verb !== null)
+            $verbs = is_array($this->verb) ? $this->verb : array($this->verb);
+        else
+            $verbs = array();
+        if (count($verbs) && !in_array($requestType, $verbs)) {
             if (!$this->enforceVerb || $requestType == 'GET')
                 $result = $this->present($userInput);
             else

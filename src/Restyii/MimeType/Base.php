@@ -217,6 +217,7 @@ abstract class Base extends \CComponent
         $prepared = array(
             'error' => array(
                 'code' => $exception->getCode(),
+                'type' => get_class($exception),
                 'message' => $exception->getMessage(),
             )
         );
