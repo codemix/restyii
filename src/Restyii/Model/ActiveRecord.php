@@ -620,15 +620,28 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
         if (!empty($params['q'])) {
             $columns = $this->getTableSchema()->columns;
             $safeAttributes = $this->getSafeAttributeNames();
+            $conditions = array();
+            $bind = array();
+
             foreach($safeAttributes as $attribute) {
                 if (!isset($columns[$attribute]))
                     continue;
                 $column = $columns[$attribute];
-                if ($column->type == "string")
-                    $criteria->compare($alias.'.'.$attribute, $params['q'], true, 'OR');
-                else
-                    $criteria->compare($alias.'.'.$attribute, $params['q'], false, 'OR');
+                if ($column->type == "string") {
+                    $conditions[] = $alias.'.'.$attribute.' LIKE :search_wc_'.$attribute;
+                    $bind[':search_wc_'.$attribute] = '%'.$params['q'].'%';
+                }
+                else {
+                    $conditions[] = $alias.'.'.$attribute.' LIKE :search_'.$attribute;
+                    $bind[':search_'.$attribute] = $params['q'];
+                }
             }
+
+            if (count($conditions)) {
+                $criteria->params = \CMap::mergeArray($criteria->params, $bind);
+                $criteria->addCondition(implode(' OR ', $conditions));
+            }
+
         }
         if (!empty($params['filter'])) {
             $filterCriteria = $this->getCommandBuilder()->createColumnCriteria(
