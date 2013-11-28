@@ -287,6 +287,7 @@ abstract class Base extends \CAction
             throw new \CHttpException(404, 'The specified resource cannot be found.');
         if ($this->enableCache && !empty($cache))
             $cache->write($cacheKey, $model);
+        $model->scenario = $this->getScenario();
         return $model;
     }
 
