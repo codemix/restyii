@@ -262,7 +262,7 @@ abstract class Base extends \CAction
      * @return ActiveRecord the loaded resource model
      * @throws \CHttpException if the request doesn't contain the right parameters or the resource does not exist
      */
-    protected function load($pk = null, $finder = null)
+    public function load($pk = null, $finder = null)
     {
         if ($finder === null)
             $finder = $this->staticModel();
@@ -409,37 +409,68 @@ abstract class Base extends \CAction
             $verbs = is_array($this->verb) ? $this->verb : array($this->verb);
         else
             $verbs = array();
+        $event = new Event;
+        $event->action = $this;
         if (count($verbs) && !in_array($requestType, $verbs)) {
-            if (!$this->enforceVerb || $requestType == 'GET')
-                $result = $this->present($userInput);
-            else
+            if (!$this->enforceVerb || $requestType == 'GET') {
+                $this->onBeforePresent($event);
+                if($event->isValid) {
+                    $result = $this->present($userInput, $event->loaded);
+                    $event->loadFromResult($result);
+                    $this->onAfterPresent($event);
+                } else {
+                    throw new \CHttpException(403, \Yii::t('resource', 'You are not allowed to perform this action'));
+                }
+            } else
                 throw new \CHttpException(405, \Yii::t('resource', "{actionLabel} does not support the '{methodName}' method.",
                     array('{actionLabel}' => $this->label(), '{methodName}' => $requestType)));
         } else {
-            $event = new PerformEvent;
             $this->onBeforePerform($event);
             if($event->isValid) {
-                $result = $this->perform($userInput);
-                if(isset($result[0]))
-                    $event->status = $result[0];
-                if(isset($result[1]))
-                    $event->data = $result[1];
-                if(isset($result[2]))
-                    $event->headers = $result[2];
-                if(isset($result[3]))
-                    $event->terminateApplication = $result[3];
+                $result = $this->perform($userInput, $event->loaded);
+                $event->loadFromResult($result);
                 $this->onAfterPerform($event);
+            } else {
+                throw new \CHttpException(403, \Yii::t('resource', 'You are not allowed to perform this action'));
             }
-            $result = array($event->status, $event->data, $event->headers, $event->terminateApplication);
         }
+        $result = array($event->status, $event->data, $event->headers, $event->terminateApplication);
         call_user_func_array(array($this, 'respond'), $result);
+    }
+
+    /**
+     * This event is raised before the action is presented. To cancel presenting the action
+     * you can set the `isValid` property of the event object to false.
+     *
+     * If you have to load the model you can pass it back on the `loaded` property of the event
+     * to avoid another query when presenting the action.
+     *
+     * @param Event $event
+     */
+    public function onBeforePresent($event)
+    {
+        $this->raiseEvent('onBeforePresent',$event);
+    }
+
+    /**
+     * This event is raised after an action was presented and before the response is sent.
+     * You can change the arguments to `respond()` through the `$event` properties.
+     *
+     * @param Event $event
+     */
+    public function onAfterPresent($event)
+    {
+        $this->raiseEvent('onAfterPresent',$event);
     }
 
     /**
      * This event is raised before the action is performed. To cancel performing the action
      * you can set the `isValid` property of the event object to false.
      *
-     * @param PerformEvent $event
+     * If you have to load the model you can pass it back on the `loaded` property of the event
+     * to avoid another query when performing the action.
+     *
+     * @param Event $event
      */
     public function onBeforePerform($event)
     {
@@ -450,7 +481,7 @@ abstract class Base extends \CAction
      * This event is raised after an action was performed and before the response is sent.
      * You can change the arguments to `respond()` through the `$event` properties.
      *
-     * @param PerformEvent $event
+     * @param Event $event
      */
     public function onAfterPerform($event)
     {
