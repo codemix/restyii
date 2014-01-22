@@ -616,7 +616,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
     public function search($params = array())
     {
         $criteria = new \CDbCriteria();
-        $alias = $this->getTableAlias(false, false);
+        $alias = $this->getTableAlias(false, true);
         if (!empty($params['q'])) {
             $columns = $this->getTableSchema()->columns;
             $safeAttributes = $this->getSafeAttributeNames();
