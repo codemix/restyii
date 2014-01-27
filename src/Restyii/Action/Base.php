@@ -442,8 +442,9 @@ abstract class Base extends \CAction
      * This event is raised before the action is presented. To cancel presenting the action
      * you can set the `isValid` property of the event object to false.
      *
-     * If you have to load the model you can pass it back on the `loaded` property of the event
-     * to avoid another query when presenting the action.
+     * If you have to load the model you can pass it back in the `loaded` property of the event
+     * to avoid another query when presenting the action. Depending on the current action you'd
+     * use load(), loadRelated(), instantiateResourceModel() or instantiateRelatedModel() to do so.
      *
      * @param Event $event
      */
@@ -468,7 +469,8 @@ abstract class Base extends \CAction
      * you can set the `isValid` property of the event object to false.
      *
      * If you have to load the model you can pass it back on the `loaded` property of the event
-     * to avoid another query when performing the action.
+     * to avoid another query when performing the action. Depending on the current action you'd
+     * use load(), loadRelated(), instantiateResourceModel() or instantiateRelatedModel() to do so.
      *
      * @param Event $event
      */
@@ -515,7 +517,7 @@ abstract class Base extends \CAction
      * @param string|null the scenario to use
      * @return ActiveRecord the instantiated model
      */
-    protected function instantiateResourceModel($scenario = null)
+    public function instantiateResourceModel($scenario = null)
     {
         $modelClass = $this->getModelClass();
         return new $modelClass($scenario === null? $this->getScenario() : $scenario);
