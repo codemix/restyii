@@ -111,7 +111,7 @@ abstract class Base extends \Restyii\Action\Item\Base
      * @param string|null the scenario to use
      * @return ActiveRecord the instantiated model
      */
-    protected function instantiateRelatedModel($scenario = null)
+    public function instantiateRelatedModel($scenario = null)
     {
         $modelClass = $this->getRelatedModelClass();
         $model = new $modelClass($scenario === null? $this->getScenario() : $scenario);
@@ -147,7 +147,7 @@ abstract class Base extends \Restyii\Action\Item\Base
      * @return ActiveRecord the loaded resource model
      * @throws \CHttpException if the request doesn't contain the right parameters or the resource does not exist
      */
-    protected function loadRelated($pk = null, $finder = null)
+    public function loadRelated($pk = null, $finder = null)
     {
         if ($finder === null)
             $finder = $this->staticRelatedModel();
