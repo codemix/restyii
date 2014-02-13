@@ -18,6 +18,11 @@ class Event extends \CModelEvent
     public $action;
 
     /**
+     * @var array|bool the user input, or false if none is present
+     */
+    public $userInput;
+
+    /**
      * @var CActiveRecord|null 
      */
     public $loaded;
@@ -57,5 +62,13 @@ class Event extends \CModelEvent
             $this->headers = $result[2];
         if(isset($result[3]))
             $this->terminateApplication = $result[3];
+    }
+
+    /**
+     * @return array with arguments to use in the call to respond()
+     */
+    public function getResult()
+    {
+        return array($this->status, $this->data, $this->headers, $this->terminateApplication);
     }
 }
