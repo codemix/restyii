@@ -227,6 +227,7 @@ abstract class ActiveRecord extends \CActiveRecord implements ModelInterface
             case 'boolean':
             case 'string':
             case 'array':
+            case 'object':
                 return $type;
             default;
                 return 'string';
