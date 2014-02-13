@@ -411,6 +411,7 @@ abstract class Base extends \CAction
             $verbs = array();
         $event = new Event;
         $event->action = $this;
+        $event->userInput = $userInput;
         if (count($verbs) && !in_array($requestType, $verbs)) {
             if (!$this->enforceVerb || $requestType == 'GET') {
                 $this->onBeforePresent($event);
@@ -419,7 +420,7 @@ abstract class Base extends \CAction
                     $event->loadFromResult($result);
                     $this->onAfterPresent($event);
                 } else {
-                    throw new \CHttpException(403, \Yii::t('resource', 'You are not allowed to perform this action'));
+                    $result = $event->getResult();
                 }
             } else
                 throw new \CHttpException(405, \Yii::t('resource', "{actionLabel} does not support the '{methodName}' method.",
@@ -431,7 +432,7 @@ abstract class Base extends \CAction
                 $event->loadFromResult($result);
                 $this->onAfterPerform($event);
             } else {
-                throw new \CHttpException(403, \Yii::t('resource', 'You are not allowed to perform this action'));
+                $result = $event->getResult();
             }
         }
         $result = array($event->status, $event->data, $event->headers, $event->terminateApplication);
@@ -621,7 +622,7 @@ abstract class Base extends \CAction
      * @return bool true if the input was applied successfully, note this is not
      * the same as validation.
      */
-    protected function applyUserInput($input, ModelInterface $model)
+    public function applyUserInput($input, ModelInterface $model)
     {
         $model->setAttributes($input);
         return true;
