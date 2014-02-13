@@ -131,6 +131,8 @@ class ActiveForm extends \CActiveForm
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
             $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
+        if (!isset($htmlOptions['value']) && $model->{$attribute} instanceof \DateTime)
+            $htmlOptions['value'] = $model->{$attribute}->format('Y-m-d');
         return parent::dateField($model, $attribute, $htmlOptions);
     }
 
@@ -143,6 +145,8 @@ class ActiveForm extends \CActiveForm
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
             $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
+        if (!isset($htmlOptions['value']) && $model->{$attribute} instanceof \DateTime)
+            $htmlOptions['value'] = $model->{$attribute}->format('H:i:s');
         return parent::timeField($model, $attribute, $htmlOptions);
     }
 
@@ -155,6 +159,8 @@ class ActiveForm extends \CActiveForm
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
             $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
+        if (!isset($htmlOptions['value']) && $model->{$attribute} instanceof \DateTime)
+            $htmlOptions['value'] = $model->{$attribute}->format('Y-m-d\\TH:i:s');
         return parent::dateTimeField($model, $attribute, $htmlOptions);
     }
 
@@ -167,6 +173,8 @@ class ActiveForm extends \CActiveForm
             $htmlOptions['name'] = $attribute;
         if (!isset($htmlOptions['itemprop']))
             $htmlOptions['itemprop'] = $this->getItemPropName($attribute);
+        if (!isset($htmlOptions['value']) && $model->{$attribute} instanceof \DateTime)
+            $htmlOptions['value'] = $model->{$attribute}->format('Y-m-d\\TH:i:s');
         return parent::dateTimeLocalField($model, $attribute, $htmlOptions);
     }
 
