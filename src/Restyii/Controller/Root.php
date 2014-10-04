@@ -11,13 +11,13 @@ abstract class Root extends Base
     {
         return array(
             'index' => array(
-                'class' => 'Restyii\\Action\\Root\\Index',
+                'class' => 'Restyii\Action\Root\Index',
             ),
             'trace' => array(
                 'class' => 'Restyii\Action\Generic\Trace',
             ),
             'error' => array(
-                'class' => 'Restyii\\Action\\Root\\Error',
+                'class' => 'Restyii\Action\Root\Error',
             )
         );
     }

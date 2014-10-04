@@ -73,14 +73,9 @@ class Error extends Base
         $errorHandler = $app->getErrorHandler();
         $app->getRequest()->getResponse()->setViewName($this->getViewName());
         if ($error = $errorHandler->getError()) {
-            if (!empty($errorHandler->exception))
-                return array($error['code'], $errorHandler->exception);
-            else
-                return array($error['code'], array(
-                    'code' => $error['code'],
-                    'type' => $error['type'],
-                    'message' => $error['message'],
-                ));
+            return array($error['code'], array(
+                'error' => $error
+            ));
         }
         else
             return array(500, new \Exception('Internal Server Error'));
