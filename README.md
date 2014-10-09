@@ -131,6 +131,38 @@ Events are triggered by resources when they change state in some way, such as wh
 RAVE events are usually published to a message bus or a pub/sub channel to allow communication with other processes in the application,
 for example, to allow 'realtime' notifications in the browser.
 
+### Pusher Events
+
+Pusher events make use of the pusher.com real-time messaging platform. Please refer to http://www.pusher.com for more details.
+
+To use the push emmitter a behaviour should be attached to the RAVE resource.
+
+       'PusherEmitter' => array(
+                'class' => 'Restyii\\Event\\PusherBehavior',
+                'filter'=> array('deny'=>'attr1, attr2')
+
+The filter parameter can be used to remove this attribute from the message.
+
+To configure add the following to the component configuration
+
+     'pusherStream' => array(
+                'class' => 'Restyii\\Event\\PusherEventStream',
+                'defaultChannel' => 'Restyii',  // default channel
+                'APIKey' => 'YOUR_API_KEY',
+                'appSecret'=>'YOUR_SECRET',
+                'appId'=>'YOUR_APP_ID',
+                'eventPrefix'=>'pusher'     // add this to every event/message
+            ),
+
+The emmitted message is a JSON message with the following format
+
+    {
+        "event" : "{ }",
+        "timestamp" : " "
+    }
+
+The contents of event are the attributes of the CEvent::sender object that triggered the emmission.
+
 # Differences from standard Yii applications
 
 In order to implement RAVE, Restyii applications require several changes to the standard Yii way of doing things.
